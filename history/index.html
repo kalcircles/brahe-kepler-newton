@@ -1,0 +1,27 @@
+<h1>Historical Concept Map</h1>
+
+<div class="node" onclick="open('phase1')">
+  Phase 1: Observation
+</div>
+
+<div class="node" onclick="open('phase2')">
+  Phase 2: Pattern Discovery
+</div>
+
+<div class="node" onclick="open('phase3')">
+  Phase 3: Theory Formation
+</div>
+
+<div id="panel"></div>
+
+<script>
+const content = {
+  phase1: "Raw observations and data collection...",
+  phase2: "Emerging patterns in the data...",
+  phase3: "Mathematical unification..."
+};
+
+function open(key) {
+  document.getElementById("panel").innerHTML = content[key];
+}
+</script>
