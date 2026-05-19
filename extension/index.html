@@ -1,20 +1,107 @@
-<h1>Extension Lab</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hint Engine Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-<p>Explore beyond the guided lesson.</p>
+<body>
 
-<ul>
-  <li>Modify parameters</li>
-  <li>Test assumptions</li>
-  <li>Run simulations</li>
-</ul>
+  <h1>Extension Lab</h1>
 
-<script>
-function runSimulation() {
-  document.getElementById("simulation").innerHTML =
-    "<p>Simulation running (placeholder)</p>";
-}
-</script>
+  <label for="problemSelect">Choose a problem:</label>
+  <select id="problemSelect"></select>
 
-<button onclick="runSimulation()">Run Simulation</button>
+  <div id="app"></div>
+
+  <div id="controls">
+    <button id="nextHintBtn">Next hint</button>
+    <button id="showAllBtn">Show all</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <!-- your engine -->
+  <script src="/brahe-kepler-newton/programming/hint-engine.js"></script>
+
+  <script>
+    let data = {};
+    let currentProblemId = null;
+    let currentHintElements = [];
+
+    async function loadProblems() {
+      const res = await fetch("/brahe-kepler-newton/data/hints.json");
+      return await res.json();
+    }
+
+    function renderProblem(problemId) {
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+
+      const problem = data[problemId];
+
+      const title = document.createElement("h2");
+      title.textContent = problem.title;
+      app.appendChild(title);
+
+      const hintElements = [];
+
+      problem.hints.forEach(hint => {
+        const p = document.createElement("p");
+        p.textContent = hint;
+        p.style.display = "none";
+        app.appendChild(p);
+        hintElements.push(p);
+      });
+
+      return hintElements;
+    }
+
+    function setProblem(problemId) {
+      currentProblemId = problemId;
+
+      currentHintElements = renderProblem(problemId);
+
+      hintEngine.initProblem(problemId, currentHintElements.length);
+    }
+
+    async function main() {
+      data = await loadProblems();
+
+      const select = document.getElementById("problemSelect");
+
+      // populate dropdown with all problems
+      Object.keys(data).forEach(id => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = data[id].title;
+        select.appendChild(option);
+      });
+
+      // initial problem
+      setProblem(select.value);
+
+      select.addEventListener("change", (e) => {
+        setProblem(e.target.value);
+      });
+
+      document.getElementById("nextHintBtn").onclick = () => {
+        hintEngine.showNextHint(currentProblemId, currentHintElements);
+      };
+
+      document.getElementById("showAllBtn").onclick = () => {
+        hintEngine.showAll(currentProblemId, currentHintElements);
+      };
+
+      document.getElementById("resetBtn").onclick = () => {
+        hintEngine.reset(currentProblemId, currentHintElements);
+      };
+    }
+
+    main();
+  </script>
+
+</body>
+</html>
 
 <div id="simulation"></div>
