@@ -1,27 +1,26 @@
-<h1>Historical Concept Map</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept Map: Brahe → Kepler → Newton</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-<div class="node" onclick="open('phase1')">
-  Phase 1: Observation
-</div>
+<body>
 
-<div class="node" onclick="open('phase2')">
-  Phase 2: Pattern Discovery
-</div>
+  <div id="container">
 
-<div class="node" onclick="open('phase3')">
-  Phase 3: Theory Formation
-</div>
+    <canvas id="map"></canvas>
 
-<div id="panel"></div>
+    <div id="sidebar">
+      <h2>Concept Details</h2>
+      <div id="infoTitle">Click a node</div>
+      <div id="infoBody">Select a concept to explore its role in the history of orbital theory.</div>
+    </div>
 
-<script>
-const content = {
-  phase1: "Raw observations and data collection...",
-  phase2: "Emerging patterns in the data...",
-  phase3: "Mathematical unification..."
-};
+  </div>
 
-function open(key) {
-  document.getElementById("panel").innerHTML = content[key];
-}
-</script>
+  <script src="/brahe-kepler-newton/programming/concept-map.js"></script>
+
+</body>
+</html>
