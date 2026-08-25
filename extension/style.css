@@ -1,0 +1,27 @@
+body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      line-height: 1.5;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    p {
+      padding: 8px 12px;
+      background: #f5f5f5;
+      border-left: 4px solid #333;
+      margin: 8px 0;
+    }
+
+    button, select {
+      margin: 6px 4px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    #controls {
+      margin-top: 20px;
+    }
