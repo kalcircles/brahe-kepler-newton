@@ -6,7 +6,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
 
-# Crucial fix for your organization's locked UI permission
 permissions:
   contents: write
   pull-requests: write
@@ -18,14 +17,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install and Build Site
-        if: github.event.action != 'closed'
-        run: |
-          npm install
-          npm run build
+      # WE REMOVED THE NPM INSTALL AND NPM RUN BUILD STEPS
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ./build/
+          source-dir: .        # Changed from ./build/ to . (the root folder)
           preview-branch: gh-pages
