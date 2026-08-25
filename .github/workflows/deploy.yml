@@ -1,0 +1,24 @@
+name: Deploy Production Site
+
+on:
+  push:
+    branches:
+      - main  # Triggers every time a PR is merged into main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .               # Deploys your root HTML files
+          branch: gh-pages        # Pushes them to your deployment branch
+          clean-exclude: |        # CRUCIAL: Protects your PR previews from being deleted
+            pr-preview/
