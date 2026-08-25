@@ -1,0 +1,34 @@
+{
+  "brahe_problem_1": {
+    "title": "Why don't circular orbits fit Mars?",
+    "hints": [
+      "Start by comparing predicted vs observed positions.",
+      "Look for systematic deviation rather than random error.",
+      "Ask what assumption circular motion forces.",
+      "Consider whether the orbit shape itself is wrong.",
+      "Kepler eventually replaced circles with ellipses."
+    ]
+  },
+
+  "kepler_problem_1": {
+    "title": "How do you fit Brahe's data?",
+    "hints": [
+      "Try adjusting radius as a function of angle.",
+      "A circle keeps radius constant—does that match data?",
+      "Introduce eccentricity as a free parameter.",
+      "Observe residuals for different shapes.",
+      "Ellipse minimizes systematic error."
+    ]
+  },
+
+  "newton_problem_1": {
+    "title": "Why does 1/r² produce ellipses?",
+    "hints": [
+      "Start from centripetal acceleration requirement.",
+      "Relate force to curvature of trajectory.",
+      "Try conserving angular momentum.",
+      "Connect inverse-square to Kepler’s 3rd law.",
+      "Solve orbit equation in polar coordinates."
+    ]
+  }
+}

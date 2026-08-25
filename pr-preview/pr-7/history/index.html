@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planetary Motion Knowledge Graph</title>
+  <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+</head>
+
+<body>
+  <header>
+    <h1>Planetary Motion and Gravity</h1>
+    <p>Interactive concept map showing how observation, mathematics, and gravity developed historically.</p>
+  </header>
+
+  <div class="container">
+    <div id="cy"></div>
+
+    <div class="panel">
+      <span class="category" id="category">Click a node</span>
+      <h2 id="title">Select a concept</h2>
+      <p id="description">Hover over a node for a short explanation, or click it to see more details here.</p>
+      <p id="significance"></p>
+
+      <div class="orbit-box" id="orbitBox">
+        <h3>Elliptical Orbit Animation</h3>
+        <div class="space">
+          <div class="sun"></div>
+          <div class="ellipse"></div>
+          <div class="mars"></div>
+        </div>
+        <p>Mars follows an elliptical orbit rather than a perfect circle.</p>
+      </div>
+
+      <div class="legend">
+        <strong>Categories</strong>
+        <div><span class="dot scientist"></span>Scientists</div>
+        <div><span class="dot law"></span>Laws / Theories</div>
+        <div><span class="dot math"></span>Mathematical Concepts</div>
+        <div><span class="dot problem"></span>Problems / Questions</div>
+        <div><span class="dot data"></span>Observational Data</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const nodeData = {
+
+ptolemy: {
+  title: "Claudius Ptolemy",
+  category: "Scientist",
+  short: "Greek astronomer who developed the geocentric model.",
+  description: "Ptolemy was a Greek mathematician, astronomer, and geographer who lived in Alexandria during the 2nd century CE. His astronomical work became the foundation of medieval and Renaissance astronomy for over a thousand years. Ptolemy believed that Earth remained motionless at the center of the universe while all celestial objects revolved around it. To explain strange planetary movements, he developed a complex mathematical system using epicycles and deferents. Although later challenged by Copernicus and Brahe, his model dominated astronomy until the Scientific Revolution.",
+  significance: "His geocentric model shaped astronomy for over a millennium."
+},
+
+almagest: {
+  title: "The Almagest",
+  category: "Astronomical Treatise",
+  short: "Ptolemy’s influential astronomical work.",
+  description: "The Almagest was Ptolemy’s major astronomical treatise and one of the most influential scientific texts in history. It mathematically described the motion of planets, stars, and the Moon within a geocentric universe. The work combined observation, geometry, and predictive calculations to create a highly detailed astronomical model. During the Renaissance, renewed interest in classical knowledge led scholars to translate and study the Almagest again, influencing figures such as Copernicus.",
+  significance: "It preserved and transmitted ancient astronomy into the Renaissance."
+},
+
+geocentric: {
+  title: "Geocentric System",
+  category: "Cosmological Model",
+  short: "Earth-centered model of the universe.",
+  description: "The geocentric system was the dominant worldview before the Scientific Revolution. According to this model, Earth sat motionless at the center of the cosmos while the Sun, Moon, planets, and stars revolved around it. The theory aligned closely with religious and philosophical beliefs of perfection and cosmic order. However, astronomers struggled to explain retrograde motion, changing planetary brightness, and irregular planetary speeds using simple circular motion, leading to increasingly complicated models.",
+  significance: "This worldview dominated astronomy before heliocentrism."
+},
+
+humanism: {
+  title: "Humanism",
+  category: "Renaissance Movement",
+  short: "Revival of classical learning during the Renaissance.",
+  description: "Humanism was an intellectual movement of the Renaissance that revived interest in classical Greek and Roman texts. Humanists believed that ancient knowledge should be critically studied, translated, and improved rather than simply accepted through tradition. This movement encouraged mathematics, observation, textual scholarship, and intellectual exploration. Humanism helped restore access to ancient scientific works, including Ptolemy’s astronomy, and created the intellectual environment that allowed new scientific ideas to emerge.",
+  significance: "Humanism helped create the intellectual foundations of the Scientific Revolution."
+},
+
+regiomontanus: {
+  title: "Regiomontanus",
+  category: "Scientist",
+  short: "Renaissance mathematician who revived Ptolemaic astronomy.",
+  description: "Regiomontanus was a German mathematician and astronomer of the Renaissance who helped revive astronomical scholarship in Europe. Inspired by humanist ideals, he studied and refined classical astronomical works, especially those of Ptolemy. His publication Epitome of the Almagest made ancient astronomy more accessible to later scientists. Copernicus studied these works extensively, making Regiomontanus an important link between classical astronomy and the Scientific Revolution.",
+  significance: "He connected Renaissance humanism with later astronomical reform."
+},
+
+newton: {
+        title: "Isaac Newton",
+        category: "Scientist",
+        short: "Connected planetary motion with gravity.",
+        description: "Newton developed the theory of universal gravitation and laws of motion.",
+        significance: "He explained why planets stay in orbit around the Sun."
+},
+copernicus: {
+  title: "Nicolaus Copernicus",
+  category: "Scientist",
+  short: "Astronomer who proposed heliocentrism.",
+  description: "Nicolaus Copernicus was a Renaissance astronomer who proposed the heliocentric model of the solar system. Instead of placing Earth at the center, Copernicus argued that the planets, including Earth, revolved around the Sun. His model provided a simpler explanation for retrograde motion and planetary ordering. Although revolutionary, his theory lacked strong observational proof during his lifetime, so many scholars remained skeptical. His work nevertheless triggered a major shift in scientific thought.",
+  significance: "Copernicus initiated the heliocentric revolution."
+},
+
+heliocentric: {
+  title: "Heliocentric Model",
+  category: "Cosmological Model",
+  short: "Sun-centered model of the planetary system.",
+  description: "The heliocentric model proposed that the Sun, rather than Earth, occupied the center of the planetary system. Earth both rotated on its axis and revolved around the Sun. This theory naturally explained retrograde motion as an effect of relative planetary motion rather than requiring complicated epicycles. Although Copernicus still used circular orbits, heliocentrism became the foundation for later work by Kepler, Galileo, and Newton.",
+  significance: "Heliocentrism transformed astronomy and physics."
+},
+
+motionProblems: {
+  title: "Planetary Motion Problems",
+  category: "Astronomical Problem",
+  short: "Retrograde motion and irregular planetary behavior.",
+  description: "Astronomers struggled for centuries to explain strange planetary behavior. Planets sometimes appeared to move backward across the night sky, changed in brightness, and moved at irregular speeds. These observations conflicted with the philosophical belief that heavenly motion should be perfectly circular and uniform. Attempts to solve these problems led to increasingly complex models and eventually motivated the transition toward heliocentrism.",
+  significance: "These problems exposed weaknesses in geocentric astronomy."
+},
+
+uraniborg: {
+  title: "Uraniborg Observatory",
+  category: "Observatory",
+  short: "Tycho Brahe’s precision observatory.",
+  description: "Uraniborg was Tycho Brahe’s observatory and research center built on the island of Hven. It combined astronomy, instrument-making, mathematics, and data collection in a single scientific institution. Brahe designed giant observational instruments there because telescopes had not yet been invented. Uraniborg represented a turning point in astronomy because it emphasized systematic precision and long-term observation rather than reliance on ancient authority alone.",
+  significance: "Uraniborg established a new standard of observational astronomy."
+},
+
+supernova1572: {
+  title: "1572 Supernova",
+  category: "Observation",
+  short: "A new star that challenged Aristotelian cosmology.",
+  description: "In 1572, Tycho Brahe observed a bright new star, now known to have been a supernova. According to Aristotelian cosmology, the heavens were believed to be perfect and unchanging. Brahe’s observations contradicted this belief because a completely new celestial object had appeared in the supposedly eternal heavens. This discovery weakened confidence in traditional cosmology and encouraged further investigation into the nature of the universe.",
+  significance: "The supernova challenged belief in unchanging heavens."
+},
+
+comet1577: {
+  title: "1577 Comet",
+  category: "Observation",
+  short: "Comet that disproved solid celestial spheres.",
+  description: "The Great Comet of 1577 played a major role in challenging older cosmological beliefs. At the time, many scholars believed the planets were embedded within solid crystalline celestial spheres. By measuring the comet’s parallax, Tycho Brahe demonstrated that the comet travelled beyond the Moon and through the supposed spheres. This evidence strongly suggested that celestial spheres could not be solid structures, undermining Aristotelian cosmology.",
+  significance: "The comet weakened belief in crystalline celestial spheres."
+},
+
+keplerLaws: {
+  title: "Kepler’s Laws of Planetary Motion",
+  category: "Mathematics",
+  short: "Mathematical laws describing planetary motion.",
+  description: "Kepler developed three laws describing planetary motion. The first stated that planets move in elliptical orbits with the Sun at one focus. The second explained that planets sweep out equal areas in equal times, meaning they move faster when closer to the Sun. The third law connected orbital period to orbital distance. These laws replaced centuries of belief in perfect circular motion.",
+  significance: "Kepler’s laws became foundational to modern astronomy."
+},
+
+elliptical: {
+  title: "Elliptical Orbits",
+  category: "Mathematics",
+  short: "Planets move in ellipses rather than circles.",
+  description: "Kepler’s proposal of elliptical orbits represented a major break from ancient astronomy. Earlier astronomers believed heavenly motion must consist of perfect circles because circles were considered mathematically and philosophically ideal. Kepler showed that elliptical motion matched observational evidence far more accurately. This demonstrated that nature did not necessarily conform to classical philosophical ideals.",
+  significance: "Elliptical motion replaced the ancient ideal of perfect circles."
+},
+
+gravity: {
+  title: "Gravity",
+  category: "Physics",
+  short: "Universal attractive force between masses.",
+  description: "Gravity is the universal attractive force between masses. Newton showed that gravity governs both falling objects on Earth and the motion of planets in space. This idea unified terrestrial and celestial physics into a single mathematical framework, replacing earlier distinctions between heavenly and earthly motion.",
+  significance: "Gravity unified astronomy and terrestrial physics."
+},
+
+inverseSquare: {
+  title: "Inverse Square Law",
+  category: "Physics",
+  short: "Gravitational force decreases with distance squared.",
+  description: "Newton’s inverse square law states that gravitational force decreases with the square of the distance between two objects. This mathematical relationship explained why planets orbit the Sun and allowed scientists to calculate orbital behavior with high accuracy. The law became one of the foundations of classical physics.",
+  significance: "The law mathematically explained planetary motion."
+},
+
+angularMomentum: {
+  title: "Angular Momentum",
+  category: "Mathematics",
+  short: "Rotational motion conserved in orbital systems.",
+  description: "Angular momentum describes the rotational motion of an object around a point or axis. In orbital systems, angular momentum helps explain why planets move faster when closer to the Sun and slower when farther away. Conservation of angular momentum later became an important principle in understanding planetary dynamics and celestial mechanics.",
+  significance: "Angular momentum explains changing orbital speeds."
+},
+
+mathFramework: {
+  title: "Mathematical Framework",
+  category: "Scientific Method",
+  short: "Nature described through mathematics.",
+  description: "The Scientific Revolution increasingly relied on mathematics to describe nature. Scientists such as Kepler and Newton believed the universe followed precise mathematical laws that could be discovered through observation and calculation. This mathematical framework transformed astronomy from a largely descriptive discipline into a predictive science.",
+  significance: "Mathematics became central to scientific explanation."
+},
+data: {
+  title: "Observational Data",
+  category: "Observational Data",
+  short: "Precise measurements used to test theories.",
+  description: "Observational data refers to accurate measurements of planetary positions collected over time.",
+  significance: "It allowed scientists to replace assumptions with evidence-based models."
+},
+
+kepler: {
+        title: "Johannes Kepler",
+        category: "Scientist",
+        short: "Used Brahe’s data to discover planetary laws.",
+        description: "Kepler used Brahe’s observational data to develop three laws of planetary motion.The first stated that planets move in elliptical orbits with the Sun at one focus. The second explained that planets sweep out equal areas in equal times, meaning they move faster when closer to the Sun. The third law connected orbital period to orbital distance. These laws replaced centuries of belief in perfect circular motion.",
+        significance: "He showed that planets move in elliptical orbits."
+      },
+      
+      circle: {
+        title: "Circular Orbit Assumption",
+        category: "Problem / Question",
+        short: "The older idea that orbits were perfect circles.",
+        description: "Earlier models assumed planets moved in perfect circles.",
+        significance: "This assumption failed to explain Mars’ motion accurately."
+      },
+      mars: {
+        title: "Mars Orbit Problem",
+        category: "Problem / Question",
+        short: "Mars did not fit circular orbit models.",
+        description: "Mars’ observed motion did not match the predictions of circular orbit models.",
+        significance: "This helped lead Kepler toward elliptical orbits."
+      },
+       
+    };
+
+const preloadImages = [
+  "images/ptolemy.png",
+  "images/copernicus.png",
+  "images/brahe.png",
+  "images/kepler.png",
+  "images/newton.png",
+  "images/observational.jpg"
+];
+
+preloadImages.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
+
+    const cy = cytoscape({
+      container: document.getElementById("cy"),
+
+      elements: [
+
+  // NODES
+
+{
+  data: {
+    id: "ptolemy",
+    label: "Ptolemy",
+    type: "scientist",
+    image: "images/ptolemy.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+{
+  data: {
+    id: "regiomontanus",
+    label: "Regiomontanus",
+    type: "scientist",
+    image: "images/regiomontanus.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+{
+  data: {
+    id: "copernicus",
+    label: "Nicolaus\nCopernicus",
+    type: "scientist",
+    image: "images/copernicus.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+{
+  data: {
+    id: "brahe",
+    label: "Tycho\nBrahe",
+    type: "scientist",
+    image: "images/brahe.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+{
+  data: {
+    id: "kepler",
+    label: "Johannes\nKepler",
+    type: "scientist",
+    image: "images/kepler.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+
+{
+  data: {
+    id: "newton",
+    label: "Isaac\nNewton",
+    type: "scientist",
+    image: "images/newton.png",
+    borderColor: "#3b82f6"
+  }
+},
+
+{
+  data: {
+    id: "almagest",
+    label: "The\nAlmagest",
+    type: "data",
+    image: "images/almagest.png",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "humanism",
+    label: "Humanism",
+    type: "data",
+    image: "images/humanism.jpg",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "uraniborg",
+    label: "Uraniborg",
+    type: "data",
+    image: "images/Uraniborg.jpg",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "observationalData",
+    label: "Observational\nData",
+    type: "data",
+    image: "images/observational.jpg",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "supernova1572",
+    label: "1572\nSupernova",
+    type: "data",
+    image: "images/supernova.png",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "comet1577",
+    label: "1577\nComet",
+    type: "data",
+    image: "images/1577comet.jpg",
+    borderColor: "#eab308"
+  }
+},
+
+{
+  data: {
+    id: "geocentric",
+    label: "Geocentric\nSystem",
+    type: "law",
+    image: "images/geocentric.jpg",
+    borderColor: "#22c55e"
+  }
+},
+
+{
+  data: {
+    id: "heliocentric",
+    label: "Heliocentric\nModel",
+    type: "law",
+    image: "images/heliocentric.jpg",
+    borderColor: "#22c55e"
+  }
+}, 
+
+{
+  data: {
+    id: "keplerLaws",
+    label: "Kepler's\nLaws",
+    type: "math",
+    image: "images/kepler_law.png",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "elliptical",
+    label: "Elliptical\nOrbits",
+    type: "math",
+    image: "images/elliptic.png",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "gravity",
+    label: "Gravity",
+    type: "math",
+    image: "images/gravity.jpg",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "inverseSquare",
+    label: "Inverse\nSquare Law",
+    type: "math",
+    image: "images/inverse.png",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "angularMomentum",
+    label: "Angular\nMomentum",
+    type: "math",
+    image: "images/angular.png",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "mathFramework",
+    label: "Mathematical\nFramework",
+    type: "math",
+    image: "images/mathphy.png",
+    borderColor: "#a855f7"
+  }
+},
+
+{
+  data: {
+    id: "motionProblems",
+    label: "Planetary\nMotion Problems",
+    type: "problem",
+    image: "images/retrograde.jpg",
+    borderColor: "#f97316"
+  }
+},
+
+
+  // CONNECTIONS
+
+  { data: { source: "ptolemy", target: "almagest", label: "wrote" } },
+
+  { data: { source: "almagest", target: "geocentric", label: "described" } },
+
+  { data: { source: "humanism", target: "regiomontanus", label: "inspired" } },
+
+  { data: { source: "regiomontanus", target: "almagest", label: "revived" } },
+
+  { data: { source: "geocentric", target: "motionProblems", label: "failed to explain" } },
+
+  { data: { source: "copernicus", target: "heliocentric", label: "proposed" } },
+
+  { data: { source: "heliocentric", target: "motionProblems", label: "explained" } },
+
+  { data: { source: "motionProblems", target: "brahe", label: "motivated" } },
+
+  { data: { source: "brahe", target: "uraniborg", label: "built" } },
+
+  { data: { source: "uraniborg", target: "observationalData", label: "produced" } },
+
+  { data: { source: "brahe", target: "supernova1572", label: "observed" } },
+
+  { data: { source: "brahe", target: "comet1577", label: "measured" } },
+
+  { data: { source: "observationalData", target: "kepler", label: "used by" } },
+
+  { data: { source: "kepler", target: "keplerLaws", label: "developed" } },
+
+  { data: { source: "keplerLaws", target: "elliptical", label: "described" } },
+
+  { data: { source: "keplerLaws", target: "newton", label: "inspired" } },
+
+  { data: { source: "newton", target: "gravity", label: "explained" } },
+
+  { data: { source: "gravity", target: "inverseSquare", label: "described by" } },
+
+  { data: { source: "inverseSquare", target: "angularMomentum", label: "connected to" } },
+
+  { data: { source: "angularMomentum", target: "mathFramework", label: "part of" } }
+
+],
+
+//       style: [
+//         {
+//   selector: "node",
+//   style: {
+
+//     "label": "data(label)",
+
+//     "background-image": "data(image)",
+//     "background-fit": "cover",
+
+//     "shape": "ellipse",
+
+//     "width": 90,
+//     "height": 90,
+
+//     "border-width": 2,
+//     "border-color": "data(borderColor)",
+
+//     "text-valign": "bottom",
+//     "text-halign": "center",
+//     "text-margin-y": 12,
+
+//     "color": "#ffffff",
+//     "font-size": 11,
+//     "font-weight": "600",
+
+//     "text-wrap": "wrap",
+//     "text-max-width": 100,
+
+//     "overlay-opacity": 0
+//   }
+// },
+//       ],
+
+style: [
+  {
+    selector: "node",
+    style: {
+      label: "data(label)",
+
+      width: 90,
+      height: 90,
+
+      shape: "ellipse",
+
+      // IMAGE SETTINGS (robust version)
+      "background-image": "data(image)",
+      "background-fit": "cover",
+      "background-clip": "node",
+      "background-opacity": 1,
+
+      // border
+      "border-width": 2,
+      "border-color": "data(borderColor)",
+
+      // text
+      "text-valign": "bottom",
+      "text-halign": "center",
+      "text-margin-y": 12,
+
+      color: "#ffffff",
+      "font-size": 11,
+      "font-weight": "600",
+
+      "text-wrap": "wrap",
+      "text-max-width": 100,
+
+      "overlay-opacity": 0
+    }
+  }
+],
+
+      layout: {
+        name: "cose",
+        animate: true,
+        padding: 50,
+        nodeRepulsion: 9000,
+        idealEdgeLength: 130
+      }
+    });
+
+    const tooltip = document.getElementById("tooltip");
+
+    cy.on("mouseover", "node", function(event) {
+      const node = event.target;
+      const info = nodeData[node.id()];
+      tooltip.innerText = info.short;
+      tooltip.style.display = "block";
+    });
+
+    cy.on("mousemove", "node", function(event) {
+      tooltip.style.left = event.originalEvent.clientX + 15 + "px";
+      tooltip.style.top = event.originalEvent.clientY + 15 + "px";
+    });
+
+    cy.on("mouseout", "node", function() {
+      tooltip.style.display = "none";
+    });
+
+    cy.on("tap", "node", function(event) {
+      const node = event.target;
+      const info = nodeData[node.id()];
+
+      document.getElementById("title").innerText = info.title;
+      document.getElementById("category").innerText = info.category;
+      document.getElementById("description").innerText = info.description;
+      document.getElementById("significance").innerText = "Significance: " + info.significance;
+
+      document.getElementById("orbitBox").style.display =
+        node.id() === "ellipse" ? "block" : "none";
+
+      cy.elements().removeClass("highlighted");
+      node.addClass("highlighted");
+      node.connectedEdges().addClass("highlighted");
+      node.connectedEdges().connectedNodes().addClass("highlighted");
+    });
+  </script>
+</body>
+</html>
