@@ -1,0 +1,87 @@
+<section class="law-panel active" id="panel-toolkit">
+  <div class="reading-column">
+
+    <div class="article-header">
+      <h2>Vectors &amp; Ellipses</h2>
+      <p class="lede"><span class="all-caps">Abir Mehta</span></br>
+        <span class="colored-italics">Edited by Dr. Kathryn McGill</span></p>
+    </div>
+
+    <section class="section">
+      <p>The upcoming derivations build on a few math ideas: vectors, the cross product, the dot product, and the geometry of an ellipse. None of it is particularly challenging, but dropping it in the middle of a physics derivation just gets in the way, so everything sits here on its own page. Read the tidbits you need as you need them.</p>
+    </section>
+
+    <section class="section" id="sec-vectors">
+      <h3 class="section-heading">1. Vectors</h3>
+      <p>A vector is just a quantity with both a magnitude and a direction. Velocity is a vector (50 km/h, heading north); so is force, and so is position. We draw vectors as arrows: the length is the magnitude, and the way it points is the direction. We write vectors with a little arrow on top, like $\vec{A}$, and the plain symbol $A$ (no arrow) means just the magnitude.</p>
+      <p>A unit vector is a vector whose magnitude is exactly $1$, which means that all it tells you is direction. We put a hat on it instead of an arrow: $\hat{r}$. Unit vectors are handy because any vector can be split into &ldquo;how long&rdquo; times &ldquo;which way&rdquo;: for example, $\vec{r} = r\hat{r}$ means &ldquo;a distance $r$ in the $\hat{r}$ direction.&rdquo; This is the notation we&rsquo;ll work with in the 2nd Law setup.</p>
+    </section>
+
+    <section class="section" id="sec-crossproduct">
+      <h3 class="section-heading">2. The Vector Cross Product</h3>
+
+      <p>The vector cross product may seem like a tricky concept, but its physical meaning is more fundamental to understanding it than the math itself.</p>
+
+      <p>Suppose, we have two vectors $\vec{A}$ and $\vec{B}$. Their cross product $\vec{A} \times \vec{B}$ is another vector $\vec{C}$. $\vec{C}$ has magnitude $|\vec{A}||\vec{B}|\sin \theta_{AB}$ where $\theta_{AB}$ is the angle between vectors $\vec{A}$ and $\vec{B}$. More importantly, however, $\vec{C}$ is mutually perpendicular (orthogonal) to both $\vec{A}$ and $\vec{B}$. Not sure what that looks like? Check out the figure below!</p>
+
+      <figure id="fig-toolkit-1" data-title="Cross Product Visualization">
+        <img src="images/vector-cross-product.png" alt="Vectors A and B connected by their tails to form a shaded parallelogram, and vector C pointing perpendicular to this plane.">
+        <figcaption><span class="label">Fig. 1</span>Vector $\vec{C}$, which is the cross product of vectors $\vec{A}$ and $\vec{B}$, is orthogonal to the plane formed by $\vec{A}$ and $\vec{B}$. If $\vec{A}$ and $\vec{B}$ are drawn tail-to-tail, the area of the resulting parallelogram is the magnitude of $\vec{C}$.</figcaption>
+      </figure>
+
+      <p>Note that if $\vec{A}$ and $\vec{B}$ are parallel or anti-parallel, then $\theta_{AB} = 0$ or $\pi$, so $|\vec{C}| = |\vec{A}||\vec{B}|\sin \theta_{AB} = 0$. In other words, the cross product of two aligned vectors is always zero.</p>
+
+    </section>
+
+    <section class="section" id="sec-dotproduct">
+      <h3 class="section-heading">3. The Dot Product</h3>
+
+      <p>The dot product is the other way to multiply two vectors. Just like with the cross product, understanding what it represents matters more than the formula itself.</p>
+
+      <p>Suppose, we have two vectors $\vec{A}$ and $\vec{B}$. Their dot product $\vec{A} \cdot \vec{B}$ is a scalar&mdash;just a number, not a vector. It is equal to $|\vec{A}||\vec{B}|\cos \theta_{AB}$ where $\theta_{AB}$ is the angle between vectors $\vec{A}$ and $\vec{B}$. Notice that when $\vec{A}$ and $\vec{B}$ point in the same direction, $\theta_{AB} = 0$, so $\cos \theta_{AB} = 1$ and the dot product is at its largest. When they are perpendicular, $\theta_{AB} = 90^\circ$, so $\cos \theta_{AB} = 0$ and the dot product is zero. Not sure what that looks like? Check out the figure below!</p>
+
+      <figure id="fig-toolkit-2" data-title="Dot Product Visualization">
+        <img src="images/dot-product.png" alt="Vectors A and B are tail-to-tail, with the angle between them labeled theta. The projection of B onto A is shown.">
+        <figcaption><span class="label">Fig. 2</span>The dot product of two vectors $\vec{A}$ and $\vec{B}$ relies on finding the projection of one vector along the direction of the other. In this figure, the projection of $\vec{B}$ onto $\vec{A}$, equal to $|\vec{B}|\cos\theta$, is labeled on the bracket below $\vec{A}$.</figcaption>
+      </figure>
+
+      <p>Note that this is the opposite of the cross product: the dot product is zero when the two vectors are perpendicular, while the cross product is zero when they are parallel.</p>
+
+    </section>
+
+    <section class="section" id="sec-ellipses">
+      <h3 class="section-heading">4. Ellipses</h3>
+      <p>You&rsquo;ve worked with circles forever, but ellipses probably haven&rsquo;t gotten as much attention&mdash;and Kepler&rsquo;s laws are full of them, so let&rsquo;s try to get familiar with one. The good news is that an ellipse is basically a stretched-out circle.</p>
+
+      <h4 class="subheading">4.1 The two-thumbtack definition</h4>
+      <p>Pick two fixed points and call them the foci (one focus, two foci). An ellipse is every point whose distances to those two foci add up to the same total. There&rsquo;s a classic way to see this: take a loop of string, pin it down at two spots with thumbtacks, pull it tight with a pencil, and trace all the way around. Since the string length never changes, the two distances always add up to the same length, and you get a perfect ellipse. Check out the figure below!</p>
+      <p>Why should we care? It&rsquo;s because of where the Sun sits. In Kepler&rsquo;s 1st Law, a planet orbits in an ellipse with the Sun at one of the foci&mdash;not at the center. That&rsquo;s exactly why a planet gets close to the Sun on one side of its orbit and swings far away on the other, an important aspect of understanding Kepler's 2nd Law.</p>
+
+      <h4 class="subheading">4.2 The vocabulary ($a$, $b$, $c$, and $e$)</h4>
+      <p>Put the ellipse flat with its long direction along the $x$-axis and its center at the origin. There are four key lengths that we&rsquo;ll discuss. The semi-major axis $a$ is the distance from the center out to the far end&mdash;the long way. The semi-minor axis $b$ is the distance from the center out to the side&mdash;the short way. The distance $c$ tells you how far each focus sits from the center. And the eccentricity $e = c/a$ is a single number for how squished the ellipse is: $e = 0$ gives a perfect circle, and as $e$ gets closer to $1$, the ellipse approaches a line.</p>
+
+      <figure id="fig-toolkit-3" data-title="Ellipse Parameters">
+        <img src="images/ellipse.png" alt="An ellipse with relevant quantities labeled: both foci, semi-major axis a, semi-minor axis b, and focal distance c. Point P on the perimeter is a distance r1 from one focus and r2 from the other.">
+        <figcaption><span class="label">Fig. 3</span>The parts of an ellipse as defined above. For any point $P$ on the perimeter of the ellipse, $r_1 + r_2 = 2a = \mathrm{const}$, where $r_1$ is the distance between $P$ and the first focus, $F_1$, and $r_2$ is the distance between $P$ and the second focus, $F_2$.</figcaption>
+      </figure>
+
+      <h4 class="subheading">4.3 Let&rsquo;s check a couple of these</h4>
+      <p>First up: the two distances always add to $2a$. To see it, slide your point all the way to the right end of the ellipse. From there, the distance to the far focus is the whole width minus a little, and the distance to the near focus is that little bit&mdash;add them and you just get the full width, which is $2a$. Since the total is fixed for every point, we get</p>
+      <div class="equation" id="eq-ellipse-start" data-title="Definition of an Ellipse">$$r_1 + r_2 = 2a$$</div>
+      <p>for any point on the ellipse.</p>
+      <p>Next, the relationship between $a$, $b$, and $c$. Move your point up to the very top of the ellipse. By symmetry it&rsquo;s the same distance from both foci, and since those distances add to $2a$, each one is exactly $a$. Now look at the triangle made by the center, one focus, and that top point: its legs are $b$ and $c$, and its hypotenuse is $a$. Using Pythagorean theorem, gives us</p>
+      <div class="equation skip-num">$$a^2 = b^2 + c^2.$$</div>
+
+      <h4 class="subheading">4.4 Where the equation comes from</h4>
+      <p>If you want the actual equation of the ellipse, begin with Eq. <span data-jump="eq-ellipse-start" class="eq-ref"></span> and write $r_1$ and $r_2$ in terms of $(x,y)$. Note that the coordinates $(x,y)$ assume an origin at the center of the ellipse, but $r_1$ and $r_2$ have "origins" at $F_1$ and $F_2$, respetively, so you will need to adjust accordingly:</p>
+      <div class="equation skip-num">$$\sqrt{(x+c)^2 + y^2} + \sqrt{(x-c)^2 + y^2} = 2a.$$</div>
+      <p>It looks messy, but it&rsquo;s just algebra: move one square root over, square both sides, simplify, isolate the other square root, and square again. You end up with</p>
+      <div class="equation skip-num">$$\frac{x^2}{a^2} + \frac{y^2}{a^2 - c^2} = 1,$$</div>
+      <p>and since we just showed $a^2 - c^2 = b^2$, that&rsquo;s the standard form:</p>
+      <div class="equation-boxed" data-title="Standard Ellipse Equation">$$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1.$$</div>
+      <p>Quick check: if you set $a = b$ (so $c = 0$ and both foci land on the center), this turns into $x^2 + y^2 = a^2$&mdash;just a circle of radius $a$. So a circle really is an ellipse with $e = 0$, which is exactly why we&rsquo;re allowed to use a circle as the easy case when we derive Kepler&rsquo;s 3rd Law.</p>
+
+    </section>
+
+  </div>
+</section>
