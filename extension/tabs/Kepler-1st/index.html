@@ -1,0 +1,634 @@
+<section class="law-panel" id="panel-first">
+<div class="reading-column">
+
+  <div class="article-header">
+    <h2>Kepler&rsquo;s First Law: Derivation</h2>
+    <p class="lede">Abir Mehta</p>
+  </div>
+
+  <!-- ===================== 1. WHAT IS IT ===================== -->
+  <section class="section" id="k1-what">
+    <h3 class="section-heading">1. What is Kepler&rsquo;s 1st Law?</h3>
+
+    <p>The first of Kepler&rsquo;s laws states that the orbit of a planet around its Sun generates an elliptical path, with the Sun at one of the foci of the ellipse.</p>
+
+    <p>By the way, if you are unfamiliar with ellipses and their respective terminology (which we will be discussing in detail throughout this law), you should check out the <a class="inline-go" data-go="toolkit"><strong>Vectors &amp; Ellipses</strong></a> section for appropriate background! We lean on that vocabulary constantly here, especially the semi-major axis $a$ and the eccentricity $e = c/a$.</p>
+  </section>
+
+  <!-- ===================== 2. HOW DO WE PROVE IT ===================== -->
+  <section class="section" id="k1-how">
+    <h3 class="section-heading">2. How Do We Prove Kepler&rsquo;s 1st Law?</h3>
+
+    <h4 class="subheading">2.1 Motives</h4>
+
+    <p>Well, for most of us, this law is very hard to rigorously prove analytically. You would have to solve the differential equation of motion for the orbit&rsquo;s radius as a function of its angle, and then show that what falls out of it is exactly the polar equation of an ellipse. That is well beyond the scope of our discussion (a phrase you&rsquo;ve heard a few times by now). The entire derivation isn&rsquo;t particularly challenging to think of, but simply mind-bendingly tedious with the amount of algebra you have to do, building up from nothing!</p>
+
+    <p>A simpler way to visualize this law is through the use of a computer simulation in Python, which is exactly what we will be doing on this page. We&rsquo;ll show Kepler&rsquo;s 1st Law, but in an entirely different way, which (in my opinion) can be just as rewarding.</p>
+
+    <p>Here&rsquo;s the idea. We give a planet a starting position and a starting velocity, and we tell the computer exactly one physical rule: Newton&rsquo;s law of gravitation. That&rsquo;s the only rule it gets, and we say nothing at all about ellipses. Then we let it take thousands of tiny steps forward in time and plot every position the planet visits. If Kepler was right, an ellipse should show up on your screen with the Sun at a focus, purely because of the force law.</p>
+
+    <h4 class="subheading">2.2 The Plan</h4>
+
+    <p>Since this page is a bit longer than the other two laws, here&rsquo;s where we&rsquo;re going, so you know where each piece fits:</p>
+
+    <ol>
+      <li>The differential equation of motion, from Newton&rsquo;s 2nd Law and the vector form of gravity. (<a class="inline-go" data-jump="k1-eom">Section 3</a>)</li>
+      <li>Initial conditions, so we get the one specific ellipse we asked for instead of some random orbit. (<a class="inline-go" data-jump="k1-ic">Section 4</a>)</li>
+      <li>The Vis-Viva equation, which tells us how hard to kick the planet. This is the only real derivation on the page. (<a class="inline-go" data-jump="k1-visviva">Section 5</a>)</li>
+      <li>Euler&rsquo;s method, which is how we get a computer to march the equation forward in time. (<a class="inline-go" data-jump="k1-euler">Section 6</a>)</li>
+    </ol>
+
+    <p>Then we build the code in <a class="inline-go" data-jump="k1-code">Section 7</a> and run it.</p>
+  </section>
+
+  <!-- ===================== 3. THE DIFFERENTIAL EQUATION (sec:eom) ===================== -->
+  <section class="section" id="k1-eom">
+    <h3 class="section-heading">3. The Differential Equation</h3>
+
+    <p>The entire gist of proving Kepler&rsquo;s 1st Law is showing how the differential equation of motion leads to the familiar ellipse. Now you may be asking: what differential equation of motion? We can develop it directly from Newton&rsquo;s 2nd Law,</p>
+    <div class="equation">$$\sum \vec{F} = m\vec{a}.$$</div>
+    <p>We consider a planet of mass $m$ in orbit about a star of mass $M$, which sits at the origin $(0,0)$ of our Cartesian plane. I&rsquo;m sure you guys know the magnitude representation of Newton&rsquo;s law of gravitation:</p>
+    <div class="equation">$$F_g = \frac{GMm}{r^2},$$</div>
+    <p>where $G$ is the gravitational constant and $r$ is the distance between the two bodies. In vector form, which you met back on the <a class="inline-go" data-go="second">2nd Law page</a>, we can write this as</p>
+    <div class="equation">$$\vec{F}_g = -\frac{GMm}{r^2}\, \hat{r}.$$</div>
+    <p>Here, $\hat{r}$ is a unit vector that points along the line connecting the two bodies, and the negative sign simply indicates that the force of gravity is inward, relative to the origin. Refer to the <a class="inline-go" data-go="toolkit"><strong>Vectors &amp; Ellipses</strong></a> section (or the <a class="inline-go" data-go="second">2nd Law page</a>) if any part of this confuses you.</p>
+  </section>
+
+  <section class="section">
+    <p>We assume that the planet is given some initial tangential velocity so that it sets into a stable orbit. The only force that acts on the planet is the gravitational force $\vec{F}_g$ as described above. Using Newton&rsquo;s 2nd Law, we then have</p>
+    <div class="equation">$$\begin{aligned} \sum \vec{F} &= m\vec{a} \\ \vec{F}_g &= m\vec{a} \\ -\frac{GMm}{r^2}\, \hat{r} &= m\vec{a}. \end{aligned}$$</div>
+    <p>$\vec{a}$ might as well be written as $\mathrm{d}^2\vec{r}/\mathrm{d} t^2$. So we can now write</p>
+    <div class="equation">$$\begin{aligned} m\frac{\mathrm{d}^2 \vec{r}}{\mathrm{d} t^2} &= -\frac{GMm}{r^2}\, \hat{r} \\[2pt] \frac{\mathrm{d}^2\vec{r}}{\mathrm{d} t^2} &= -\frac{GM}{r^2}\, \hat{r}. \end{aligned}$$</div>
+    <p>Notice that the planet&rsquo;s mass $m$ cancelled clean off both sides! This tells us that the orbit doesn&rsquo;t care how heavy the planet is, only how heavy the star is.</p>
+
+    <p>The whole essence of proving Kepler&rsquo;s 1st Law is simply to solve this differential equation and show that the vector $\vec{r}$ traces out an ellipse over time, with the Sun at one of the foci of that ellipse.</p>
+
+    <h4 class="subheading">3.1 Splitting It Into Components</h4>
+
+    <p>A computer can&rsquo;t do much with $\hat{r}$ directly, so let&rsquo;s write everything out in coordinates.</p>
+
+    <p>The planet&rsquo;s position is $(x,y)$, so $r^2 = x^2+y^2$, or $r = \sqrt{x^2+y^2}$. We then see that the unit vector $\hat{r}$ has components $(x/r,\, y/r)$. You can verify yourself that this is indeed a unit vector with magnitude 1! So now we get two differential equations, one in $x$ and one in $y$:</p>
+    <div class="equation" id="k1-eq-ax">$$\frac{\mathrm{d}^2 x}{\mathrm{d} t^2} = -\frac{GM}{r^2}\left( \frac{x}{r} \right) = -\frac{GM}{r^3}\,x$$</div>
+    <div class="equation" id="k1-eq-ay">$$\frac{\mathrm{d}^2 y}{\mathrm{d} t^2} = -\frac{GM}{r^2}\left( \frac{y}{r} \right) = -\frac{GM}{r^3}\,y.$$</div>
+    <p>Remember that these are two separate differential equations, with the $x$ and $y$ components of position each having their own solution. These two lines are the entire physics of our simulation, so keep them handy; we&rsquo;ll be referring back to them a lot.</p>
+
+    <p>One thing to notice before we move on: these two equations are <em>coupled</em>. The $x$ equation contains $r$, and $r$ depends on $y$. So we can&rsquo;t just solve one and then the other, we have to advance both at the same time.</p>
+  </section>
+
+  <!-- ===================== 4. INITIAL CONDITIONS (sec:ic) ===================== -->
+  <section class="section" id="k1-ic">
+    <h3 class="section-heading">4. Initial Conditions</h3>
+
+    <p>Obviously, the planet simply doesn&rsquo;t teleport into some idealized ellipse. Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> describe <em>every</em> possible orbit around our star, from a tight little circle to a long skinny cigar. Which one we actually get is decided entirely by where we drop the planet and how hard we push it.</p>
+
+    <p>So the shape of the orbit comes out of the initial conditions rather than the force law, which means picking those conditions carefully is most of the work here.</p>
+
+    <h4 class="subheading">4.1 Setting Up the Start</h4>
+
+    <p>So first, suppose the Sun sits at the origin $(0,0)$ for simplicity. The planet starts a distance $x_0$ to the right of the origin, lying on the $x$-axis. And suppose also that we give the planet a little &lsquo;kick&rsquo; directly upward, so it sets off with velocity $\vec{v_0} = (0, v_{y0})$. For simplicity, we&rsquo;ll have our planet begin at the perihelion (the point of closest approach).</p>
+
+    <figure id="fig-first-1">
+      <img src="images/kepler1-setup.png" alt="The Sun at the origin with the planet a distance x-nought out along the x-axis, kicked straight up">
+      <figcaption><span class="label">Fig. 1</span>The starting setup: the Sun $M$ at the origin, the planet $m$ a distance $x_0$ out along the $x$-axis, kicked straight up with $\vec{v_0}$.</figcaption>
+    </figure>
+
+    <p>Keep in mind that we are developing Python code that keeps track of four key quantities: $x$, $y$, $v_x$, $v_y$. Even if you have no past computational background, I have faith that you will make this happen!</p>
+
+    <h4 class="subheading">4.2 Where to Start It</h4>
+
+    <p>Now, say we want an ellipse with a particular semi-major axis $a$ and a particular eccentricity $e$. From the <a class="inline-go" data-go="toolkit" data-anchor="sec-ellipses"><strong>Vectors &amp; Ellipses</strong></a> section, the center of the ellipse sits a distance $c$ from the focus, and the far end is a distance $a$ from the center. So measuring from the focus, the <em>near</em> end of the ellipse sits at $a - c$, and since $e = c/a$ gives us $c = ae$, we have</p>
+    <div class="equation">$$r_p = a - c = a - ae = a(1-e).$$</div>
+    <p>Thus, our starting distance is pinned down:</p>
+    <div class="equation-boxed">$$\boxed{x_0 = a(1-e).}$$</div>
+
+    <p>Half of the job is now done: we know <em>where</em> to start the planet for a given $(a,e)$, and we know the kick points straight up. What we don&rsquo;t know yet is how big that kick should be. Kicking it too hard or too gently can distort our desired parameters $(a, e)$ off the bat. Surprisingly, there&rsquo;s only exactly one speed that gives us the ellipse we asked for.</p>
+
+    <p>Unfortunately, the hardest part about controlling the shape of the orbit in code is deriving a formula that gives you that correct initial velocity. That&rsquo;s what the next section is for.</p>
+  </section>
+
+  <!-- ===================== 5. VIS-VIVA (sec:visviva) ===================== -->
+  <section class="section" id="k1-visviva">
+    <h3 class="section-heading">5. Derivation of the Vis-Viva Equation</h3>
+
+    <p>The Vis-Viva equation gives us the speed of an orbiting body at <em>any</em> point of its orbit. Once we have it, we plug in $r = a(1-e)$ and read off the initial velocity kick $(0, v_{y0})$ that sets our planet into an elliptical orbit of semi-major axis $a$.</p>
+  </section>
+
+  <p class="mode-hint">How do you want to take this one?</p>
+  <div class="mode-switch" data-modeswitch="visviva" role="group" aria-label="How to work through the Vis-Viva derivation">
+    <button type="button" class="mode-btn active" data-mode="try">Try it yourself</button>
+    <button type="button" class="mode-btn" data-mode="read">Read through it</button>
+  </div>
+
+  <div data-modepane="visviva" data-mode="try">
+  <div class="derivation" data-carousel="d1b">
+    <div class="derivation-head">
+      <span class="derivation-eyebrow">Try it first &middot; one step at a time</span>
+      <div class="carousel-nav">
+        <button class="carousel-arrow carousel-prev" data-prev="d1b" aria-label="Previous step">&larr;</button>
+        <div class="carousel-dots" data-dots="d1b"></div>
+        <span class="carousel-counter" data-counter="d1b"></span>
+        <button class="carousel-arrow carousel-next" data-next="d1b" aria-label="Next step">&rarr;</button>
+      </div>
+    </div>
+    <div class="carousel-track" data-track="d1b">
+
+      <div class="step-slide active">
+        <div class="step">
+          <div class="step-label">Step 1: Specific Mechanical Energy</div>
+          <p class="step-prompt">Write down the total energy $E$ of the orbiting planet. Then get rid of the planet&rsquo;s mass, the same way we did in the equation of motion, and give the result a name.</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="1b-1">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="1b-1">0 / 4</span>
+            <button class="hint-reset" data-reset="1b-1">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="1b-1"></div></div>
+            <span class="solution-pct-label" data-meterlabel="1b-1">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="1b-1">
+            <div class="hint" data-pct="22"><div class="hint-head"><span class="hint-label">Hint 1: Step 1</span><span class="hint-pct">&#8776;22%</span></div>
+              <p>The total energy $(E)$ of the orbiting planet is a sum of its kinetic $(K)$ and potential $(U)$ energy, so $E = K + U$. What are those two for a planet a distance $r$ from a star of mass $M$?</p>
+            </div>
+            <div class="hint" data-pct="46"><div class="hint-head"><span class="hint-label">Hint 2: Step 1</span><span class="hint-pct">&#8776;46%</span></div>
+              <div class="equation">$$E = \frac{1}{2} mv^2 - \frac{GMm}{r}.$$</div>
+              <p>Now look at every single term. What do they all have in common?</p>
+            </div>
+            <div class="hint" data-pct="72"><div class="hint-head"><span class="hint-label">Hint 3: Step 1</span><span class="hint-pct">&#8776;72%</span></div>
+              <p>Every term here carries a factor of $m$, and as we just saw, the planet&rsquo;s mass shouldn&rsquo;t matter to the orbit anyway. So let&rsquo;s divide it out.</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <div class="equation-boxed">$$\epsilon = \frac{1}{2} v^2 - \frac{GM}{r}.$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 2: Comparing the Turning Points</div>
+          <p class="step-prompt">Look at the two turning points&mdash;the perihelion at $r_p = a(1-e)$ and the aphelion at $r_a = a(1+e)$. Use conservation of angular momentum to relate $v_a$ to $v_p$, then use conservation of energy to solve for $v_p^2$.</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="1b-2">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="1b-2">0 / 5</span>
+            <button class="hint-reset" data-reset="1b-2">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="1b-2"></div></div>
+            <span class="solution-pct-label" data-meterlabel="1b-2">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="1b-2">
+            <div class="hint" data-pct="16"><div class="hint-head"><span class="hint-label">Hint 1: Step 2</span><span class="hint-pct">&#8776;16%</span></div>
+              <p>Recall that the angular momentum vector has magnitude $L = mvr \sin \theta$, where $\theta$ is the angle between the momentum and position vectors. What is $\theta$ at a turning point?</p>
+            </div>
+            <div class="hint" data-pct="36"><div class="hint-head"><span class="hint-label">Hint 2: Step 2</span><span class="hint-pct">&#8776;36%</span></div>
+              <p>At both turning points $\theta = 90^\circ$, so $\sin\theta = 1$ and this collapses to just $L = mvr$. Angular momentum is conserved (you showed on the <a class="inline-go" data-go="second">2nd Law page</a> that gravity exerts no torque about the star!), so equate the magnitudes at the perihelion and aphelion.</p>
+            </div>
+            <div class="hint" data-pct="58"><div class="hint-head"><span class="hint-label">Hint 3: Step 2</span><span class="hint-pct">&#8776;58%</span></div>
+              <div class="equation">$$v_a = v_p \left( \frac{1-e}{1+e}\right).$$</div>
+              <p>Good&mdash;now bring in the other conserved quantity.</p>
+            </div>
+            <div class="hint" data-pct="80"><div class="hint-head"><span class="hint-label">Hint 4: Step 2</span><span class="hint-pct">&#8776;80%</span></div>
+              <p>The specific mechanical energy $\epsilon$ is constant throughout the orbit, so it must be equal at the perihelion and the aphelion. Write that out, substitute the $v_a$ you just found, and only one unknown is left.</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <div class="equation-boxed">$$v^2_p = \frac{GM(1+e)}{a(1-e)}.$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 3: The Energy of an Orbit</div>
+          <p class="step-prompt">Take that expression for $v_p^2$ and substitute it back into the specific energy evaluated at the perihelion. Simplify as far as it will go&mdash;the result is cleaner than you might expect.</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="1b-3">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="1b-3">0 / 4</span>
+            <button class="hint-reset" data-reset="1b-3">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="1b-3"></div></div>
+            <span class="solution-pct-label" data-meterlabel="1b-3">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="1b-3">
+            <div class="hint" data-pct="24"><div class="hint-head"><span class="hint-label">Hint 1: Step 3</span><span class="hint-pct">&#8776;24%</span></div>
+              <p>Start from $\epsilon = \tfrac{1}{2}v_p^2 - GM/r_p$, and remember that $r_p = a(1-e)$.</p>
+            </div>
+            <div class="hint" data-pct="52"><div class="hint-head"><span class="hint-label">Hint 2: Step 3</span><span class="hint-pct">&#8776;52%</span></div>
+              <div class="equation">$$\epsilon = \frac{1}{2} \left[ \frac{GM(1+e)}{a(1-e)}\right] - \frac{GM}{a(1-e)}.$$</div>
+              <p>Both terms share a factor. Pull it out front.</p>
+            </div>
+            <div class="hint" data-pct="76"><div class="hint-head"><span class="hint-label">Hint 3: Step 3</span><span class="hint-pct">&#8776;76%</span></div>
+              <div class="equation">$$\epsilon = \frac{GM}{a(1-e)} \cdot \frac{e-1}{2}.$$</div>
+              <p>Now look hard at $(1-e)$ and $(e-1)$.</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <div class="equation-boxed">$$\boxed{\epsilon = -\frac{GM}{2a}.}$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 4: Assembling the Equation</div>
+          <p class="step-prompt">You now have two expressions for the same conserved quantity $\epsilon$: the general one in terms of $v$ and $r$, and the one you just found in terms of $a$. Set them equal and solve for $v$.</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="1b-4">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="1b-4">0 / 2</span>
+            <button class="hint-reset" data-reset="1b-4">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="1b-4"></div></div>
+            <span class="solution-pct-label" data-meterlabel="1b-4">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="1b-4">
+            <div class="hint" data-pct="45"><div class="hint-head"><span class="hint-label">Hint 1: Step 4</span><span class="hint-pct">&#8776;45%</span></div>
+              <div class="equation">$$\frac{1}{2} v^2 -\frac{GM}{r} = -\frac{GM}{2a}.$$</div>
+              <p>Isolate $v$ from here.</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <div class="equation-boxed">$$\boxed{v = \sqrt{GM \left( \frac{2}{r} - \frac{1}{a}\right)}}.$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <div data-modepane="visviva" data-mode="read" hidden>
+  <section class="section">
+    <h4 class="subheading">5.1 Specific Mechanical Energy</h4>
+
+    <p>The total energy $(E)$ of the orbiting planet is a sum of its kinetic $(K)$ and potential $(U)$ energy,</p>
+    <div class="equation">$$E = K+U,$$</div>
+    <p>or</p>
+    <div class="equation">$$E = \frac{1}{2} mv^2 - \frac{GMm}{r}.$$</div>
+    <p>Every term here carries a factor of $m$, and as we just saw, the planet&rsquo;s mass shouldn&rsquo;t matter to the orbit anyway. So let&rsquo;s divide it out. Dividing the above energy equation by $m$ gives us the specific mechanical energy $(\epsilon)$, which represents the energy per unit mass:</p>
+    <div class="equation">$$\epsilon = \frac{1}{2} v^2 - \frac{GM}{r}.$$</div>
+    <p>Because the total mechanical energy is conserved, the specific mechanical energy remains constant throughout the entirety of the orbit.</p>
+
+    <h4 class="subheading">5.2 Comparing the Turning Points</h4>
+
+    <p>For an elliptical orbit of semi-major axis $a$ and eccentricity $e$, let&rsquo;s look at the two turning points where the velocity vector is perfectly perpendicular to the position vector. These points are at the perihelion (where we have initially placed the planet, closest point of approach, $r_p = a(1-e)$) and the aphelion (the point of farthest approach, $r_a = a(1+e)$).</p>
+
+    <p>Recall that the angular momentum vector has magnitude $L = mvr \sin \theta$, where $\theta$ is the angle between the momentum and position vectors. At both turning points $\theta = 90^\circ$, so $\sin\theta = 1$ and this collapses to just $L = mvr$. Because angular momentum is conserved (you showed on the <a class="inline-go" data-go="second">2nd Law page</a> that gravity exerts no torque about the star!), we can equate the respective magnitudes at the perihelion and aphelion:</p>
+    <div class="equation">$$\begin{aligned} m r_a v_a &= mr_p v_p \\ r_a v_a &= r_p v_p \\ v_a &= v_p \left( \frac{r_p}{r_a}\right) = v_p \left( \frac{a(1-e)}{a(1+e)}\right) \\ v_a &= v_p \left( \frac{1-e}{1+e}\right). \end{aligned}$$</div>
+    <p>As we mentioned, the specific mechanical energy $\epsilon$ is constant throughout the orbit, so it must be equal at the perihelion and the aphelion:</p>
+    <div class="equation">$$\begin{aligned} \frac{1}{2} v_p^2 - \frac{GM}{r_p} &= \frac{1}{2}v_a^2 - \frac{GM}{r_a} \\[4pt] \frac{1}{2} v_p^2 - \frac{GM}{a(1-e)} &= \frac{1}{2} \left[ v_p \left( \frac{1-e}{1+e}\right)\right]^2 - \frac{GM}{a(1+e)}. \end{aligned}$$</div>
+    <p>Only one unknown is left in there. By isolating $v_p^2$, we find that</p>
+    <div class="equation">$$v^2_p = \frac{GM(1+e)}{a(1-e)}.$$</div>
+
+    <h4 class="subheading">5.3 The Energy of an Orbit</h4>
+
+    <p>We substitute this expression for $v^2_p$ back into the original specific energy evaluated at the perihelion point:</p>
+    <div class="equation">$$\begin{aligned} \epsilon &= \frac{1}{2}v_p^2 - \frac{GM}{r_p} \\[2pt] \epsilon &= \frac{1}{2} \left[ \frac{GM(1+e)}{a(1-e)}\right] - \frac{GM}{a(1-e)} \\[2pt] \epsilon &= \frac{GM}{a(1-e)} \left[ \frac{1+e}{2} - 1 \right] \\[2pt] \epsilon &= \frac{GM}{a(1-e)} \cdot \frac{e-1}{2}. \end{aligned}$$</div>
+    <p>The $(1-e)$ cancels against the $(e-1)$ up to a sign, and carrying out the algebra we obtain the result</p>
+    <div class="equation-boxed">$$\boxed{\epsilon = -\frac{GM}{2a}.}$$</div>
+    <p>This highlights a beautiful property of orbital mechanics: the total specific orbital energy depends strictly on the mass of the central star and the size of the orbit&rsquo;s semi-major axis $(a)$, completely independent of the eccentricity $e$! A nearly circular orbit and a long skinny one with the same $a$ carry exactly the same energy per unit mass. It&rsquo;s also the reason the Vis-Viva equation comes out as clean as it does.</p>
+
+    <p>The negative sign, by the way, is the signature of a <em>bound</em> orbit. A planet with $\epsilon \geq 0$ has passed the escape speed, and its path is no longer periodic.</p>
+
+    <h4 class="subheading">5.4 Assembling the Equation</h4>
+
+    <p>Now, we are in the position to assemble the Vis-Viva equation. We have two expressions for the same conserved quantity, so set them equal:</p>
+    <div class="equation">$$\begin{aligned} \frac{1}{2} v^2 -\frac{GM}{r} &= \epsilon \\[2pt] \frac{1}{2} v^2 -\frac{GM}{r} &= -\frac{GM}{2a}. \end{aligned}$$</div>
+    <p>After isolating $v$, we finally arrive at the <strong>Vis-Viva equation</strong>:</p>
+    <div class="equation-boxed">$$\boxed{v = \sqrt{GM \left( \frac{2}{r} - \frac{1}{a}\right)}}.$$</div>
+    <p>The Vis-Viva equation gives the magnitude of the velocity at any point of the planet&rsquo;s orbit in terms of the semi-major axis $a$ and its variable orbit radius $r$. Notice that there&rsquo;s no $e$ anywhere in it! It relates the speed to the current radius and the semi-major axis, and that&rsquo;s all. Eccentricity never enters.</p>
+  </section>
+  </div>
+
+  <section class="section" id="k1-launch">
+    <h4 class="subheading">5.5 Application of the Vis-Viva Equation</h4>
+
+    <p>So how does the eccentricity get into our simulation at all? Through the starting distance, and nowhere else.</p>
+
+    <p>Our initial velocity kick $(0, v_{y0})$ occurs at a position $x_0 = a(1-e)$ to the right of the Sun, and since the kick is entirely in the $y$-direction, $v_{y0}$ <em>is</em> the full speed at that moment. Plugging into the Vis-Viva equation, we obtain the long-desired result</p>
+    <div class="equation">$$v_{y0} = \sqrt{GM \left( \frac{2}{a(1-e)} - \frac{1}{a} \right)}$$</div>
+    <div class="equation-boxed">$$\boxed{v_{y0} = \sqrt{GM \left( \frac{1+e}{a(1-e)} \right)}.}$$</div>
+    <p>So $e$ shows up twice in our setup, and both times it&rsquo;s an initial condition: once in $x_0 = a(1-e)$, and once in the kick above. Those two numbers are everything our code needs in order to produce the ellipse we asked for.</p>
+  </section>
+
+  <!-- ===================== 6. EULER'S METHOD (sec:euler) ===================== -->
+  <section class="section" id="k1-euler">
+    <h3 class="section-heading">6. Euler&rsquo;s Method</h3>
+
+    <p>We have the physics and we have the initial conditions. The one thing missing is time. Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> give us the planet&rsquo;s <em>acceleration</em> right now, but what we actually want to plot is its <em>position</em> over a whole orbit. So we need a way to get from one to the other.</p>
+
+    <p>We want to plot the position over time, but in order to do so, we first need to find the velocity at each time during the orbit. Mathematically, let us see how this arises.</p>
+
+    <p>As an example, we use the acceleration in the $x$ direction $a_x$. Start with the definition of acceleration,</p>
+    <div class="equation">$$a_x = \frac{\mathrm{d} v_x}{\mathrm{d} t}.$$</div>
+    <p>Rearrange so that</p>
+    <div class="equation">$$\mathrm{d} v_x = a_x \mathrm{d} t.$$</div>
+    <p>Now, suppose that the velocity in the $x$ direction at time $t$ is $v_{x,i}$ and at time $t+\Delta t$ it is $v_{x,f}$. The change in velocity $\Delta v_{x} = v_{x,f} - v_{x,i}$ is $a_x \Delta t$, as suggested by the above equation. Rearranging, we find that</p>
+    <div class="equation">$$v_{x,f} = v_{x,i} + a_x \Delta t.$$</div>
+    <p>This is effectively how Euler&rsquo;s method works! We start with some initial positions and velocities. Then, according to the differential equation, we calculate the instantaneous acceleration for a time $t$. We use that quantity of acceleration to calculate the next value of velocity at a time $t+\Delta t$. Since we have a small $\Delta t \sim \mathrm{d} t$, our calculations can be incredibly precise, because we update our values so often.</p>
+
+    <p>Now here is the natural next question: if we have the velocity for all the times $t$ in our period (obtained from the method shown above), how can the position be obtained next? Use the definition of velocity and the same thought process shown above to arrive at your conclusion.</p>
+  </section>
+
+  <section class="section">
+    <h4 class="subheading">6.1 The Four Update Rules</h4>
+
+    <p>Okay, now that you&rsquo;ve (hopefully) shown what was asked, we&rsquo;ll have four relations that will be useful in our code:</p>
+    <div class="equation">$$\begin{aligned} v_{x,f} &= v_{x,i} + a_x \Delta t \\ v_{y,f} &= v_{y,i} + a_y \Delta t \\ x_f &= x_i + v_{x,f}\, \Delta t \\ y_f &= y_i + v_{y,f}\, \Delta t. \end{aligned}$$</div>
+    <p>Take a close look at those last two lines: the position update uses $v_{x,f}$ and $v_{y,f}$, the <em>new</em> velocities, not the old ones. So the order we do things inside our loop actually matters. Each time through, we compute the acceleration from the current position, then update the velocities, and only then update the positions using those brand-new velocities.</p>
+
+    <p>Do not skip past this one. If you update the position first, using the old velocity, the simulation slowly leaks energy and your &ldquo;ellipse&rdquo; spirals outward into a spring instead of closing up on itself. Updating the velocity first keeps the orbit stable over many periods, even with identical physics and an identical $\Delta t$.</p>
+  </section>
+
+  <!-- ===================== 7. SETTING UP THE CODE (sec:code) ===================== -->
+  <section class="section" id="k1-code">
+    <h3 class="section-heading">7. Setting Up the Code</h3>
+
+    <h4 class="subheading">7.1 Methodology</h4>
+
+    <p>The programming language we will be using to plot the elliptical orbit is Python! Python has many numerical applications in scientific computing, and you should try to get familiar with it if you&rsquo;d like to work in STEM-related fields.</p>
+
+    <p>Here, we want to plot an arbitrary ellipse and control its semi-major axis and eccentricity.</p>
+
+    <p>We will be working in a Jupyter Notebook (a <code>.ipynb</code> file), where our code will be pieced up into seven main <strong>cells</strong>. A cell is just a block of code that you run on its own by pressing Shift+Enter. Cells share memory, so a variable you define in one is still around in the next, which lets us build the program in stages and check each stage before moving on.</p>
+
+    <p>Here are the cells in order:</p>
+    <ol>
+      <li>Packages</li>
+      <li>Constants</li>
+      <li>Orbital Parameters</li>
+      <li>Initial Conditions (Perihelion)</li>
+      <li>Time Setup</li>
+      <li>Storage + Simulation Loop</li>
+      <li>Plotting</li>
+    </ol>
+    <p>Some of these cells will be either fully given, partially given, or you will have to figure them out on your own! Our overall goal for this step-by-step run-through is to plot the elliptical orbit of Mercury about the Sun.</p>
+
+    <p>One rule for the whole program: everything stays in SI units (meters, kilograms, seconds) until the very last plot. We convert to AU once, at the end, just for the axis labels.</p>
+
+    <p>At the end of the process, I&rsquo;ll hand you a problem to try on your own, for a different planet in our solar system.</p>
+  </section>
+
+  <!-- ===== VARIABLE NAMING PANEL ===== -->
+  <section class="section" id="k1-names">
+    <h4 class="subheading">Name Your Own Variables</h4>
+
+    <p>One quick thing before we start writing. The names below are just the ones <em>I</em> happened to pick&mdash;Python doesn&rsquo;t care what you call things. If <code>vx</code> means nothing to you and <code>speed_x</code> means something, use <code>speed_x</code>. Type your own names into the boxes and every code block on the rest of this page will rename itself to match, so whatever you write stays consistent from the first cell to the last.</p>
+
+    <div class="codelab" data-codelab>
+      <div class="codelab-toolbar">
+        <span class="derivation-eyebrow">Your variable names</span>
+        <button class="nb-btn" type="button" data-vars-reset>&#8635; Reset to defaults</button>
+      </div>
+
+      <div class="var-grid">
+        <div class="var-group">
+          <p class="var-group-label">Constants</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-G">Gravitational constant <span class="sym">G</span></label><input class="var-input" id="v-G" data-var-key="G" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-M">Mass of the Sun <span class="sym">M</span></label><input class="var-input" id="v-M" data-var-key="M" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-AU">One astronomical unit <span class="sym">AU</span></label><input class="var-input" id="v-AU" data-var-key="AU" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="var-group">
+          <p class="var-group-label">Orbit</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-a">Semi-major axis <span class="sym">a</span></label><input class="var-input" id="v-a" data-var-key="a" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-e">Eccentricity <span class="sym">e</span></label><input class="var-input" id="v-e" data-var-key="e" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="var-group">
+          <p class="var-group-label">Position &amp; velocity</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-x">Position <span class="sym">x</span></label><input class="var-input" id="v-x" data-var-key="x" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-y">Position <span class="sym">y</span></label><input class="var-input" id="v-y" data-var-key="y" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-vx">Velocity <span class="sym">v<sub>x</sub></span></label><input class="var-input" id="v-vx" data-var-key="vx" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-vy">Velocity <span class="sym">v<sub>y</sub></span></label><input class="var-input" id="v-vy" data-var-key="vy" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="var-group">
+          <p class="var-group-label">The force law</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-r">Distance from the Sun <span class="sym">r</span></label><input class="var-input" id="v-r" data-var-key="r" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-ax">Acceleration <span class="sym">a<sub>x</sub></span></label><input class="var-input" id="v-ax" data-var-key="ax" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-ay">Acceleration <span class="sym">a<sub>y</sub></span></label><input class="var-input" id="v-ay" data-var-key="ay" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="var-group">
+          <p class="var-group-label">Time</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-T">Orbital period <span class="sym">T</span></label><input class="var-input" id="v-T" data-var-key="T" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-dt">Time step <span class="sym">&Delta;t</span></label><input class="var-input" id="v-dt" data-var-key="dt" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-N">Number of steps <span class="sym">N</span></label><input class="var-input" id="v-N" data-var-key="N" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="var-group">
+          <p class="var-group-label">Trajectory storage</p>
+          <div class="var-fields">
+            <div class="var-field"><label for="v-xs">Array of every <span class="sym">x</span></label><input class="var-input" id="v-xs" data-var-key="xs" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-ys">Array of every <span class="sym">y</span></label><input class="var-input" id="v-ys" data-var-key="ys" spellcheck="false" autocomplete="off"></div>
+            <div class="var-field"><label for="v-i">Loop counter <span class="sym">i</span></label><input class="var-input" id="v-i" data-var-key="i" spellcheck="false" autocomplete="off"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="var-warn" data-vars-warn></p>
+    </div>
+
+    <p class="cell-help">Every code block below is a real editable cell&mdash;click into it and type. <strong>Shift+Enter</strong> runs it in the Python kernel at the bottom of this page. Renaming a variable rewrites any cell you haven&rsquo;t touched yet; once you&rsquo;ve typed in a cell it&rsquo;s yours, and <em>Revert</em> puts the starting text back.</p>
+  </section>
+
+  <!-- ===================== THE SEVEN CELLS ===================== -->
+  <div data-codelab>
+  <section class="section" id="k1-steps">
+
+    <h4 class="subheading">7.2 Steps</h4>
+
+    <h4 class="subheading">7.2.1 Packages</h4>
+    <p>Here, we&rsquo;ll import the various Python packages needed for the computing and plotting. Don&rsquo;t worry, I got this!</p>
+
+    <div class="code-cell" data-cell="packages"></div>
+
+    <p>Quickly: <code>numpy</code> handles the arrays we&rsquo;ll store our results in, <code>matplotlib</code> does the plotting, and the last two are what let us animate the orbit inside the notebook instead of just showing a still picture.</p>
+
+    <h4 class="subheading">7.2.2 Constants</h4>
+    <p>Now, as you know, the calculations involve many constants including $G$, the gravitational constant, $M$, the mass of the Sun, and the unit of an AU. Make sure you label the units by their name and units on the right through a comment. As an example, this is how you set up a quantity in Python:</p>
+
+    <div class="code-cell" data-cell="example"></div>
+
+    <p>Everything after the <code>#</code> is a <strong>comment</strong>, which Python ignores completely; it&rsquo;s only there for humans reading your code. Always label your constants like this.</p>
+
+    <p>Search up the quantities for each of the asked constants, and make sure they are in SI units!</p>
+
+    <div class="code-cell" data-cell="constants"></div>
+
+    <h4 class="subheading">7.2.3 Orbital Parameters</h4>
+    <p>Now let us set the semi-major axis and the eccentricity of the orbit. Through a quick Google search, the eccentricity of Mercury&rsquo;s orbit is 0.206 and semi-major axis 0.387 AU&rsquo;s. Set up the orbit parameters in the following cell.</p>
+
+    <p>Watch your units here: $e$ is a bare number with no units at all, but $a$ has to come out in meters, so make sure the semi-major axis is written <em>in terms</em> of the AU quantity you defined in the last cell rather than just typing 0.387 on its own.</p>
+
+    <div class="code-cell" data-cell="params"></div>
+
+    <h4 class="subheading">7.2.4 Initial Conditions (Perihelion)</h4>
+    <p>As we&rsquo;ve discussed, we want our elliptical orbit to begin at the perihelion (point of closest approach, along the $x$-axis), and using ellipse geometry, this point is $a(1-e)$ to the right of the Sun. We have to set up two coordinates for both the position and the velocity, so that&rsquo;s four variables in total.</p>
+
+    <p>Three of them are pretty much free (think about what &ldquo;on the $x$-axis&rdquo; and &ldquo;kicked straight up&rdquo; mean for the components you aren&rsquo;t using). The fourth is the initial velocity from <a class="inline-go" data-jump="k1-launch">Section 5.5</a>, and you&rsquo;ll want <code>np.sqrt()</code> for the square root.</p>
+
+    <div class="code-cell" data-cell="initial"></div>
+
+    <h4 class="subheading">7.2.5 Time Setup</h4>
+    <p>We will run the simulation for one full orbit, so we need the period $T$.</p>
+
+    <p>The period of an ellipse squared is proportional to the cube of its semi-major axis with the given proportionality constant (as you should&rsquo;ve discovered in the derivation of <a class="inline-go" data-go="third">Kepler&rsquo;s 3rd Law</a>):</p>
+    <div class="equation">$$T^2 = \frac{4\pi^2}{GM} a^3.$$</div>
+    <p>Taking the square root on both sides yields</p>
+    <div class="equation">$$T = \frac{2\pi}{\sqrt{GM}} a^{3/2}.$$</div>
+    <p>Set this value of a period inside Python. Note that numpy already has $\pi$ built in as <code>np.pi</code>, so you don&rsquo;t need to type out a decimal for it.</p>
+
+    <div class="code-cell" data-cell="periodonly"></div>
+
+    <p>How our code will work is by using Euler&rsquo;s method for times throughout our period, continuously updating our values of velocity and hence position to trace out an elliptical orbit.</p>
+
+    <p>Anyways, we&rsquo;d like to sample about a thousand consecutive values of time throughout our period. Under the code which sets the value of the period, write</p>
+
+    <div class="code-cell" data-cell="dtonly"></div>
+
+    <p>This is our tiny time-step by which we will update the position and velocity coordinates, and it&rsquo;s the $\Delta t$ from <a class="inline-go" data-jump="k1-euler">Section 6</a>. We have 1000 values of time per period. When graphing this, the path will trace out a smooth elliptical curve. The more time values you sample, the better approximation your curve will be. Think about why this is true.</p>
+
+    <p>Next, we will set the number of values $N$ of position and velocity we&rsquo;d like in our arrays (I will get to this in a moment). This should be the same amount of values as the number of time steps, 1000. Set this up beneath the <code data-vartext="@dt@">dt</code> code.</p>
+
+    <div class="code-cell" data-cell="time"></div>
+
+    <h4 class="subheading">7.2.6 Storage + Simulation Loop</h4>
+    <p>This is the interesting part, because now we have to write up Euler&rsquo;s method for the differential equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a>, using the four update rules we found in <a class="inline-go" data-jump="k1-euler">Section 6</a>.</p>
+
+    <p>First, let&rsquo;s create arrays of $x$ and $y$, all filled with zeros. Arrays are basically fixed-length rows of numbers that Python can do math on all at once. We do this so that our code has somewhere to put the real values as it computes them; without this base array, our code would have no idea what to fill! We will have $N$ values of both $x$ and $y$, for $N$ time steps.</p>
+
+    <p>Write this in a new cell of your code:</p>
+
+    <div class="code-cell" data-cell="storage"></div>
+
+    <p>This creates two arrays, both with $N$ zeros. This is our <strong>Storage</strong>.</p>
+
+    <p>Make sure you separate two things here, because this is where people tend to get stuck. The variables <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code> hold where the planet is <em>right now</em>, and they get overwritten on every single step. The arrays <code data-vartext="@xs@">xs</code> and <code data-vartext="@ys@">ys</code> are the permanent record of everywhere it has been. We need both: the current position to compute the next step, and the full history to draw the orbit at the end.</p>
+
+    <p>Now let&rsquo;s develop the <strong>Simulation Loop</strong> in a new cell of code. We are in the closing stretch!</p>
+
+    <p>Start with the following code. I will explain soon.</p>
+
+    <div class="code-cell" data-cell="loopseed"></div>
+
+    <p>This loop runs through all $N$ time steps. <code data-vartext="range(@N@)">range(N)</code> means the counter <code data-vartext="@i@">i</code> takes the values $0, 1, 2, \dots, N-1$, so the indented lines run $N$ times, once per step. At each step <code data-vartext="@i@">i</code>, it takes the current position of the planet (<code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code>) and stores it into the <code data-vartext="@i@">i</code>-th slot of our arrays. So <code data-vartext="@xs@[0]">xs[0]</code> gets the planet&rsquo;s starting $x$ position, <code data-vartext="@xs@[1]">xs[1]</code> gets the next one, and so on, all the way up to <code data-vartext="@xs@[@N@-1]">xs[N-1]</code>. The same idea applies for the $y$ coordinate. (Python starts counting slots at 0 rather than 1, so watch out for that.)</p>
+
+    <p>I&rsquo;ll add a few variables; namely, the magnitude of the position vector, and the accelerations, velocities, and positions in the $x$ and $y$ directions.</p>
+
+    <div class="code-cell" data-cell="loop"></div>
+
+    <p>Here is the most challenging part of the code. Using what you have been given about each of these variables, fill each of these out! As a hint, you can write the equality of these variables in terms of variables already written prior in the code, and variables in this for-loop.</p>
+
+    <p>A few pointers to keep you on track:</p>
+    <ul>
+      <li><code data-vartext="@r@">r</code> is the planet&rsquo;s current distance from the Sun, and you&rsquo;ve got <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code>.</li>
+      <li><code data-vartext="@ax@">ax</code> and <code data-vartext="@ay@">ay</code> come straight out of equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a>. They need <code data-vartext="@r@">r</code>, which is why <code data-vartext="@r@">r</code> gets computed first.</li>
+      <li>For the velocities, something like <code data-vartext="@vx@ = @vx@ + @ax@ * @dt@">vx = vx + ax * dt</code> means &ldquo;take the old <code data-vartext="@vx@">vx</code>, add $a_x \Delta t$, and store the answer back in <code data-vartext="@vx@">vx</code>.&rdquo; In Python this is an instruction rather than an equation, and it&rsquo;s exactly our $v_{x,f} = v_{x,i} + a_x \Delta t$ rule.</li>
+      <li>Remember from <a class="inline-go" data-jump="k1-euler">Section 6</a> that the position updates use the velocities we <em>just</em> calculated. The skeleton above is already in the right order, so don&rsquo;t rearrange it.</li>
+    </ul>
+    <p>If your plot comes out as a spiral instead of a closed loop, come back and check the order of those last four lines!</p>
+
+    <h4 class="subheading">7.2.7 Plotting</h4>
+    <p>Great job! You have just figured out the most mentally challenging part of this derivation. The plotting code will automatically be in your notebook, one cell below the <strong>Simulation Loop</strong>. You don&rsquo;t need to worry about this. It is mainly so that the graph has a nice animation, and has nothing to do with the actual physics. One thing it does do: it divides your stored positions by the AU constant, so your axes read in AU instead of hundreds of billions of meters.</p>
+
+    <div class="code-cell" data-cell="plotting"></div>
+
+    <p>Enjoy! You have just discovered Kepler&rsquo;s 1st Law in an alternative way! How does it feel?</p>
+
+  </section>
+
+  <!-- ===================== THE WHOLE NOTEBOOK ===================== -->
+  <section class="section" id="k1-whole">
+    
+    <h4 class="subheading">Your Notebook So Far</h4>
+
+    <p>This is <em>your</em> code, not mine. Every cell above feeds into the block below&mdash;whatever is currently sitting in each one, in your variable names, in notebook order. Type in a cell or hit <strong>Run</strong> and this rebuilds itself on the spot, so it is always the newest version of everything you&rsquo;ve written. When you&rsquo;re happy with it, copy the whole thing into a Jupyter Notebook.</p>
+
+    <div class="code-cell" data-cell="whole"></div>
+
+    <p class="assembled-status" data-whole-status></p>
+    
+  </section>
+
+  <!-- ===================== 8. SO WHAT DID WE JUST DO ===================== -->
+  <section class="section" id="k1-recap">
+    <h3 class="section-heading">8. So What Did We Just Do?</h3>
+
+    <p>There should be an ellipse on your screen now, with the Sun at one focus. And look at what went into producing it. We never wrote down the ellipse equation anywhere in that code, and we never mentioned a focus to the computer. The only physics in the entire loop is $-GM/r^3$ times a position component, applied a thousand times in a row!</p>
+  </section>
+
+  <!-- ===================== 9. YOUR TURN ===================== -->
+  <section class="section" id="k1-neptune">
+    <h3 class="section-heading">9. Your Turn: Neptune</h3>
+
+    <p>We did all of that for Mercury, and I handed you both of its orbital parameters. Now you get to do one on your own.</p>
+
+    <p>Look up Neptune&rsquo;s eccentricity and semi-major axis (in AU) online. Then go back to your notebook, swap those two numbers into the <strong>Orbital Parameters</strong> cell, and run everything again. That&rsquo;s the only cell you have to touch! The rest of the code doesn&rsquo;t care which planet it is, since every other quantity is calculated from $a$ and $e$.</p>
+
+    <p>Before you hit run, try to predict two things:</p>
+    <ol>
+      <li>Will Neptune&rsquo;s orbit come out rounder or more stretched out than Mercury&rsquo;s? Compare the two eccentricities you looked up.</li>
+      <li>Your code calculates the period $T$ from the semi-major axis. Roughly how much longer should Neptune&rsquo;s year be than Mercury&rsquo;s?</li>
+    </ol>
+    <p>Now run it and see how you did.</p>
+  </section>
+
+  <!-- ===================== LIVE PYTHON KERNEL ===================== -->
+  <section class="section" id="k1-sandbox">
+    <h3 class="section-heading">10. The Python Kernel</h3>
+
+    <p>Every cell above runs down here. This is a real Python 3 environment (via Pyodide) with <code>numpy</code> and <code>matplotlib</code> loaded, running <em>inside this page</em>&mdash;nothing gets installed and nothing gets sent anywhere. Cells share one kernel, just like Jupyter, so a variable you define in one is available in the next.</p>
+
+    <div class="going-further">
+      <span class="gf-label">One caveat about this kernel</span>
+      <p>It only has <code>numpy</code> and <code>matplotlib</code>, so the two animation imports (<code>FuncAnimation</code> and <code>IPython.display</code>) won&rsquo;t work here the way they do in a real notebook. Everything up through the simulation loop runs exactly the same. To see the orbit here, use the still-picture version of the plotting cell:</p>
+      <div class="code-cell" data-cell="sandboxplot"></div>
+      <p>Then run it in a proper Jupyter Notebook when you want the animation.</p>
+    </div>
+  </section>
+
+  <div class="nb" data-nb>
+    <div class="nb-toolbar">
+      <button class="nb-btn primary" data-act="run-all" type="button">&#9654; Run all</button>
+      <button class="nb-btn" data-act="add" type="button">+ Cell</button>
+      <button class="nb-btn" data-act="restart" type="button">&#8635; Restart</button>
+      <button class="nb-btn" data-act="clear" type="button">Clear output</button>
+      <span class="nb-kernel"><span class="nb-dot"></span><span class="nb-kernel-label">Kernel idle</span></span>
+    </div>
+    <div class="nb-cells"></div>
+  </div>
+
+</div>
+</section>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (typeof initInteractivePython === 'function') {
+            initInteractivePython();
+        } else {
+            console.error("initInteractivePython is still not globally available.");
+        }
+    });
+</script>

@@ -1,0 +1,255 @@
+<section class="law-panel" id="panel-second">
+<div class="reading-column">
+
+  <div class="article-header">
+    <h2>Kepler&rsquo;s Second Law: Derivation</h2>
+    <p class="lede">Abir Mehta</p>
+  </div>
+
+  <section class="section">
+    <h3 class="section-heading">1. What is Kepler&rsquo;s 2nd Law?</h3>
+
+    <p>Kepler&rsquo;s 2nd Law states that an imaginary line joining a planet to the Sun sweeps out equal areas in equal times. Refer to <a class="inline-go" data-jump="fig-second-1">Fig.&nbsp;1</a> for a visual representation of the law.</p>
+
+    <figure id="fig-second-1">
+      <img src="images/kepler2.png" alt="Kepler's 2nd Law illustration">
+      <figcaption><span class="label">Fig. 1</span>Illustration of Kepler&rsquo;s 2nd Law.</figcaption>
+    </figure>
+
+    <p>At first, this seems so abstract. How would you even measure areas swept out, especially on an ellipse&mdash;such a weird shape? Well think about it like this: in a time $\Delta t$, the planet should sweep out an area $\Delta A$ relative to its Sun that sits at one of the foci. If Kepler&rsquo;s 2nd Law holds, then the quantity $\Delta A /\Delta t$ should remain constant, no matter how small or large the time interval $\Delta t$ is. And $\Delta A /\Delta t$ is really just the change in area over the change in time&mdash;which is exactly what differentiation measures! So we can write it as a derivative,</p>
+
+    <div class="equation">$$\frac{\mathrm{d}A}{\mathrm{d}t} \;\; \text{should remain constant!}$$</div>
+
+    <p>Now, we&rsquo;ve reduces Kepler&rsquo;s 2nd Law from an unintuitive representation to something we can mathematically work with! Sounds pretty cool!</p>
+
+    <p>Understanding Kepler&rsquo;s 2nd Law is only the first step; we need to go deeper into the background information!</p>
+  </section>
+
+  <section class="section">
+    <h3 class="section-heading">2. Background Information</h3>
+
+    <h4 class="subheading">2.1 Newton&rsquo;s Universal Law of Gravitation: Vector Form</h4>
+
+    <p>I&rsquo;m sure you guys have heard of Newton&rsquo;s Universal Law of Gravitation, but only represented in magnitudes:</p>
+    <div class="equation">$$F_g = \frac{GMm}{r^2}.$$</div>
+    <p>Pretty familiar right? Well here is the <strong>vector form</strong>:</p>
+    <div class="equation">$$\vec{F}_g = -\frac{GMm}{r^2} \hat{r}.$$</div>
+
+    <p>The vector form of Newton&rsquo;s universal law of gravitation simply gives both the magnitude <em>and</em> direction of the force of gravity acting on mass $m$ due to mass $M$. Here, $r$ is the distance between the two masses measured along the line connecting them. We assume that the mass $M$ is fixed in place for simplicity (though this is not <em>exactly</em> true if you want to do some further digging).</p>
+
+    <p>Okay, there might be a few things going through your mind: what is that little hat doing on the $r$? what do you mean by a &ldquo;line connecting them&rdquo;? where does the negative sign pop up from? If the hat notation is new to you, the <a class="inline-go" data-go="toolkit" data-anchor="sec-vectors">Vectors &amp; Ellipses</a> tab has you covered&mdash;here we&rsquo;ll just look at what it means for gravity. Let&rsquo;s break it down with an illustration!</p>
+
+    <figure id="fig-second-2">
+      <img src="images/newton-law-grav.png" alt="Newton's universal law of gravitation">
+      <figcaption><span class="label">Fig. 2</span>Depiction of Newton&rsquo;s Universal Law of Gravitation.</figcaption>
+    </figure>
+
+    <p>The symbol $\hat{r}$ is a unit vector pointing along the line connecting $M$ and $m$. Key distinction: it points <em>from</em> $M$ to <em>to</em> $m$. Its direction continuously changes as $m$ moves relative to $M$.</p>
+
+    <p>In the context of classical mechanics (as you may have been taught), gravity is a <em>central force</em> that&rsquo;s also an &ldquo;action-at-a-distance&rdquo;. As shown in <a class="inline-go" data-jump="fig-second-2">Fig.&nbsp;2</a>, we place our central body $M$ at the origin, so $\hat{r}$ points <em>away</em> from $M$. But the force of gravity on $m$ pulls it <em>toward</em> $M$&mdash;the opposite direction. That&rsquo;s where the negative sign comes from! Our <strong>vector form</strong></p>
+    <div class="equation">$$\vec{F}_g = -\frac{GMm}{r^2} \hat{r}$$</div>
+    <p>takes a step in the right direction ;) which is good! Well, what about the magnitude? Well because $\hat{r}$ is a unit vector, the <em>magnitude</em> of $\vec{F}_g$ is again $GMm/r^2$. This aligns exactly with the &lsquo;magnitude-only&rsquo; form you were taught earlier.</p>
+
+    <p>Make you understand Newton&rsquo;s Universal Law of Gravitation in its <strong>vector form</strong>, because it is vital first step for the derivation.</p>
+
+    <p>The other tool we&rsquo;ll need is the vector cross product, since that&rsquo;s how torque is defined. I&rsquo;ve put the full explanation over on the <a class="inline-go" data-go="toolkit" data-anchor="sec-crossproduct">Vectors &amp; Ellipses</a> tab to keep this page focused&mdash;give it a look if you need a refresher.</p>
+  </section>
+
+  <section class="section">
+    <h3 class="section-heading">3. Deriving Kepler&rsquo;s 2nd Law</h3>
+
+    <h4 class="subheading">3.1 The Setup</h4>
+
+    <p>Suppose we have a <em>large</em> mass $M$ fixed at the origin of our coordinate system. Compared to $m$, its tiny revolutions about the system&rsquo;s center of mass are negligible&mdash;so we treat it as stationary. The mass $m$ follows an elliptical orbit about $M$, which sits at one of the foci.</p>
+
+    <figure id="fig-second-3">
+      <img src="images/position-vector.png" alt="Position vector r(t) pointing from M at the origin out to m on its elliptical orbit">
+      <figcaption><span class="label">Fig. 3</span>The position vector $\vec{r}(t)$ runs from $M$ at the origin out to $m$, with $\hat{r}$ pointing back toward $M$.</figcaption>
+    </figure>
+
+    <p>We can describe the position of $m$ at any moment with a position vector $\vec{r}(t)$, which gives both the direction and distance of $m$ from the origin. Since $\vec{r}(t)$ points along our familiar unit vector $\hat{r}$ and has magnitude $r$ (the distance between $M$ and $m$), we can write $\vec{r}(t) = r\hat{r}$.</p>
+
+    <p>In terms of cross products, the vector form of torque $\vec{\tau}$ is defined as</p>
+    <div class="equation">$$\vec{\tau} = \vec{r} \times \vec{F}.$$</div>
+    <p>Notice how this aligns with the typical formula for torque that deals with magnitudes:</p>
+    <div class="equation">$$\tau = rF \sin \theta.$$</div>
+    <p>Refer back to the cross product section (on the <a class="inline-go" data-go="toolkit" data-anchor="sec-crossproduct">Vectors &amp; Ellipses</a> tab) if you are confused.</p>
+  </section>
+
+  <!-- ===== DERIVATION CAROUSEL ===== -->
+  <div class="derivation" data-carousel="d2">
+    <div class="derivation-head">
+      <span class="derivation-eyebrow">Derivation &middot; one step at a time</span>
+      <div class="carousel-nav">
+        <button class="carousel-arrow carousel-prev" data-prev="d2" aria-label="Previous step">&larr;</button>
+        <div class="carousel-dots" data-dots="d2"></div>
+        <span class="carousel-counter" data-counter="d2"></span>
+        <button class="carousel-arrow carousel-next" data-next="d2" aria-label="Next step">&rarr;</button>
+      </div>
+    </div>
+    <div class="carousel-track" data-track="d2">
+
+      <!-- STEP 1 -->
+      <div class="step-slide active">
+        <div class="step">
+          <div class="step-label">Step 1: Angular Momentum Conservation</div>
+          <p class="step-prompt">In the cross product section, you were given the expression for torque in terms of vector cross products. First, what is the net torque on the planet about the origin (the position of $M$)? And once you have that, what does it tell you about the magnitude of its angular momentum, $L$, about $M$ as it orbits?</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="2-1">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="2-1">0 / 7</span>
+            <button class="hint-reset" data-reset="2-1">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="2-1"></div></div>
+            <span class="solution-pct-label" data-meterlabel="2-1">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="2-1">
+            <div class="hint" data-pct="12"><div class="hint-head"><span class="hint-label">Hint 1: Step 1</span><span class="hint-pct">&#8776;12%</span></div>
+              <p>What is the only force acting on the planet?</p>
+            </div>
+            <div class="hint" data-pct="25"><div class="hint-head"><span class="hint-label">Hint 2: Step 1</span><span class="hint-pct">&#8776;25%</span></div>
+              <p>I&rsquo;m assuming you&rsquo;ve found that the only force acting on $m$ is gravity! In what direction does it point relative to the position vector $\vec{r}(t)$?</p>
+            </div>
+            <div class="hint" data-pct="38"><div class="hint-head"><span class="hint-label">Hint 3: Step 1</span><span class="hint-pct">&#8776;38%</span></div>
+              <p>If you&rsquo;re still shaky on cross products, fall back on the magnitude form of torque, $\tau = rF \sin \theta$. What is the angle between $\vec{r}$ and $\vec{F}_g$ at any moment?</p>
+            </div>
+            <div class="hint" data-pct="52"><div class="hint-head"><span class="hint-label">Hint 4: Step 1</span><span class="hint-pct">&#8776;52%</span></div>
+              <p>Since $\vec{r}$ and $\vec{F}_g$ are parallel (well, anti-parallel), their cross product is $0$. So what is the net torque on $m$ about $M$?</p>
+            </div>
+            <div class="hint answer" data-pct="62"><div class="hint-head"><span class="hint-label">Answer (Part 1)</span><span class="hint-pct">&#8776;62%</span></div>
+              <p>There&rsquo;s the first part: the net torque on $m$ about $M$ is $0$! Now for the second part&mdash;what&rsquo;s the rotational cousin of $\vec{F} = \mathrm{d}\vec{p}/\mathrm{d}t$?</p>
+            </div>
+            <div class="hint" data-pct="82"><div class="hint-head"><span class="hint-label">Hint 5: Step 1</span><span class="hint-pct">&#8776;82%</span></div>
+              <p>That rotational version is $\vec{\tau} = \mathrm{d}\vec{L}/\mathrm{d}t$, where $\vec{L}$ is the angular momentum vector. So if $\vec{\tau} = 0$, what happens to $\vec{L}$ (and to its magnitude $L$)?</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer (Part 2)</span><span class="hint-pct">100%</span></div>
+              <p>If $\vec{\tau} = 0$, then $\mathrm{d}\vec{L}/\mathrm{d}t = 0$&mdash;so $\vec{L}$ doesn&rsquo;t change at all as the planet orbits. Its magnitude $L$ (the piece we&rsquo;ll use next) stays exactly constant. Angular momentum is conserved!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 2</div>
+          <p class="step-prompt">Okay, you have just learned that angular momentum is conserved! Therefore, both the magnitude and direction of the angular momentum vector $\vec{L}$ do not change with time. But <em>what is</em> the magnitude of $\vec{L}$ or $L$? Find an expression for the magnitude of angular momentum, $L$, in terms of $m$, $r$, and $\mathrm{d}\theta/\mathrm{d}t$ about $M$.</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="2-2">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="2-2">0 / 5</span>
+            <button class="hint-reset" data-reset="2-2">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="2-2"></div></div>
+            <span class="solution-pct-label" data-meterlabel="2-2">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="2-2">
+            <div class="hint" data-pct="20"><div class="hint-head"><span class="hint-label">Hint 1: Step 2</span><span class="hint-pct">&#8776;20%</span></div>
+              <p>You have probably learned that the angular momentum $L = I\omega$, where $I$ is the moment of inertia (i.e. rotational inertia) about the axis of rotation and $\omega$ is the angular velocity. This relation is especially helpful.</p>
+            </div>
+            <div class="hint" data-pct="40"><div class="hint-head"><span class="hint-label">Hint 2: Step 2</span><span class="hint-pct">&#8776;40%</span></div>
+              <p>$m$ can be treated as a point mass about its axis of rotation. How does this help in determining its moment of inertia?</p>
+            </div>
+            <div class="hint" data-pct="55"><div class="hint-head"><span class="hint-label">Hint 3: Step 2</span><span class="hint-pct">&#8776;55%</span></div>
+              <p>What&rsquo;s an expression for $\omega$ in terms of $\mathrm{d}\theta/\mathrm{d}t$?</p>
+            </div>
+            <div class="hint" data-pct="80"><div class="hint-head"><span class="hint-label">Hint 4: Step 2</span><span class="hint-pct">&#8776;80%</span></div>
+              <p>The moment inertia of a point mass about its axis of rotation is $mr^2$, where $r$ is the distance from the axis of rotation. $\omega = \mathrm{d}\theta/\mathrm{d}t$.</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Hint 5: Step 2</span><span class="hint-pct">100%</span></div>
+              <p>Plugging in the values from the last hint, you should have got</p>
+              <div class="equation">$$L = mr^2 \frac{\mathrm{d}\theta}{\mathrm{d}t}.$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 3</div>
+          <p class="step-prompt">Think about the infinitesimal area $\mathrm{d}A$ swept out by the planet as it moves an angle $\mathrm{d}\theta$ along its elliptical path. How can you transform this result into an expression for $\mathrm{d}A/\mathrm{d}t$?</p>
+
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="2-3">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="2-3">0 / 9</span>
+            <button class="hint-reset" data-reset="2-3">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="2-3"></div></div>
+            <span class="solution-pct-label" data-meterlabel="2-3">0% of the solution revealed</span>
+          </div>
+
+          <div class="hints-container" data-hints="2-3">
+            <div class="hint" data-pct="8"><div class="hint-head"><span class="hint-label">Hint 1: Step 3</span><span class="hint-pct">&#8776;8%</span></div>
+              <p>Refer to <a class="inline-go" data-jump="fig-second-4">Fig.&nbsp;4</a>.</p>
+              <figure id="fig-second-4"><img src="images/area-dA.png" alt="Infinitesimal area swept by the planet"><figcaption><span class="label">Fig. 4</span></figcaption></figure>
+            </div>
+            <div class="hint" data-pct="18"><div class="hint-head"><span class="hint-label">Hint 2: Step 3</span><span class="hint-pct">&#8776;18%</span></div>
+              <p>Because the infinitesimal angle $\mathrm{d}\theta$ is so small, you can essentially treat the arc length of the ellipse, at that point, to be a straight line.</p>
+            </div>
+            <div class="hint" data-pct="30"><div class="hint-head"><span class="hint-label">Hint 3: Step 3</span><span class="hint-pct">&#8776;30%</span></div>
+              <p>What is the infinitesimal length of the arc $\mathrm{d}s$ in terms of $r$ and $\mathrm{d}\theta$. Think about how radians work!</p>
+            </div>
+            <div class="hint" data-pct="42"><div class="hint-head"><span class="hint-label">Hint 4: Step 3</span><span class="hint-pct">&#8776;42%</span></div>
+              <p>Because we have treated the arc length as a straight line, we have a triangle with side lengths $r$, $r$, and $\mathrm{d}s$. What is the area of this triangle?</p>
+            </div>
+            <div class="hint" data-pct="55"><div class="hint-head"><span class="hint-label">Hint 5: Step 3</span><span class="hint-pct">&#8776;55%</span></div>
+              <p>You can use area of a triangle $A = bh/2$. The triangle is so thin that its height may be given as $r$ itself.</p>
+            </div>
+            <div class="hint" data-pct="68"><div class="hint-head"><span class="hint-label">Hint 6: Step 3</span><span class="hint-pct">&#8776;68%</span></div>
+              <p>The base of the triangle is the arc length $\mathrm{d}s = r\;\mathrm{d}\theta$. Finally, what is the area of the triangle.</p>
+            </div>
+            <div class="hint" data-pct="85"><div class="hint-head"><span class="hint-label">Hint 7: Step 3</span><span class="hint-pct">&#8776;85%</span></div>
+              <p>Finally, you should have gotten the area of the triangle</p>
+              <div class="equation">$$\mathrm{d}A = \frac{1}{2} r^2 \mathrm{d}\theta.$$</div>
+              <p>Transform this expression into one that involves $\mathrm{d}A/\mathrm{d}t$. It&rsquo;s pretty simple, actually!</p>
+            </div>
+            <div class="hint" data-pct="92"><div class="hint-head"><span class="hint-label">Hint 8: Step 3</span><span class="hint-pct">&#8776;92%</span></div>
+              <p>Divide by $\mathrm{d}t$ on both sides!</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Hint 9: Step 3</span><span class="hint-pct">100%</span></div>
+              <p>You should arrive at the expression for $\mathrm{d}A/\mathrm{d}t$:</p>
+              <div class="equation">$$\frac{\mathrm{d}A}{\mathrm{d}t} = \frac{1}{2}r^2 \frac{\mathrm{d}\theta}{\mathrm{d}t}$$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-slide">
+        <div class="step">
+          <div class="step-label">Step 4</div>
+          <p class="step-prompt">You should have expressions for the magnitude of the angular momentum $L$ and another expression for $\mathrm{d}A/\mathrm{d}t$. Solve for $\mathrm{d}A/\mathrm{d}t$ in terms of $L$ and other problem-specific constants. What does your result tell you about the nature $\mathrm{d}A/\mathrm{d}t$? No hints for this one!</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <section class="section">
+    <h3 class="section-heading">4. Result</h3>
+    <button class="reveal-result" data-reveal="r2">Reveal the result</button>
+    <div class="result-hidden" data-revealtarget="r2" hidden>
+      <p>You should arrive at</p>
+      <div class="equation-boxed">$$\boxed{\frac{\mathrm{d}A}{\mathrm{d}t} = \frac{L}{2m}.}$$</div>
+      <p>And there it is&mdash;Kepler&rsquo;s 2nd Law, derived straight from Newton&rsquo;s law of gravitation! Look at what&rsquo;s left on the right side. $L$ is conserved, which is exactly what we showed back in Step 1, and $m$ is just the planet&rsquo;s mass, which certainly isn&rsquo;t going anywhere. A constant over a constant is a constant, so $\mathrm{d}A/\mathrm{d}t$ never changes, and the planet really does sweep out equal areas in equal times.</p>
+
+      <p>Notice what we never once needed: the orbit being an ellipse. The only thing this derivation leans on is that gravity is a <em>central force</em>&mdash;it points straight along $\vec{r}$, so it exerts no torque about $M$. Any central force at all would give you the same law. Pretty cool, right?</p>
+
+      <div class="going-further">
+        <span class="gf-label">So why does a planet speed up near the Sun?</span>
+        <p>This is the part of the 2nd Law you can actually picture. We found that $r^2\,\mathrm{d}\theta/\mathrm{d}t$ has to stay fixed, so if $r$ shrinks, $\mathrm{d}\theta/\mathrm{d}t$ has no choice but to grow. Near the perihelion the planet is close in, so it has to swing around quickly; out at the aphelion it is far away and can afford to crawl. Same swept area either way&mdash;a short fat wedge near the Sun, a long skinny one far from it.</p>
+        <p>Mercury is the showy example: it moves at about $59\ \mathrm{km/s}$ at perihelion and only $39\ \mathrm{km/s}$ at aphelion. You get to watch this happen for yourself when you simulate its orbit over on the <a class="inline-go" data-go="first">1st Law page</a>.</p>
+      </div>
+      <button class="result-reset" data-resultreset="r2">&#8634; Hide the result</button>
+    </div>
+  </section>
+
+</div>
+</section>

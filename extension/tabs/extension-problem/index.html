@@ -1,0 +1,325 @@
+<section class="law-panel" id="panel-extension">
+<div class="reading-column">
+
+  <div class="article-header">
+    <h2>Extension Problem</h2>
+    <p class="lede">Sofia Gainullina &amp; Adar &Ouml;zalkak</p>
+  </div>
+
+  <section class="section" id="ext-intro">
+    <h3 class="section-heading">Introduction</h3>
+    <p>In this problem you will work with the remarkably precise planetary position data set recorded by Danish astronomer Tycho Brahe without a telescope from 1582 to 1600 CE to understand the relationship between Earth-based observations of planetary positions, their heliocentric orbits, Kepler&rsquo;s empirically derived Laws of Planetary Motion, and Newton&rsquo;s explanatory Law of Universal Gravitation.</p>
+  </section>
+
+  <p class="ext-part">Part 1</p>
+
+  <section class="section" id="ext-background">
+    <h3 class="section-heading">Background</h3>
+    <p>Kepler&rsquo;s Laws demonstrated that planets follow elliptical orbits with the Sun at one focus, and Newton&rsquo;s Law of Universal Gravitation provided a theoretical framework for why these orbits must be ellipses.</p>
+    <p>Before we get there, however, we are going to start by understanding the mathematical conversion between the declination of Mars as observed from Brahe&rsquo;s observatory on the island of Hven, 55.90778&deg; N latitude and 12.69667&deg; E longitude, and the position vector of Mars relative to the Earth as viewed in the &ldquo;universe frame&rdquo; in which we are looking at the orbits of Mars and Earth around the Sun.</p>
+    <p>Start with the following assumptions; we will iteratively improve the model over the course of this problem.</p>
+    <ul>
+      <li>Both Earth and Mars are in circular orbits about the Sun, which is at the center of each orbit.</li>
+      <li>The orbits of Earth and Mars are co-planar.</li>
+      <li>Both Earth and Mars are orbiting the Sun at constant speed.</li>
+    </ul>
+  </section>
+
+  <!-- ===================== 1. BUILDING THE MODEL ===================== -->
+  <section class="section" id="ext-model">
+    <h3 class="section-heading">1. Building the Model</h3>
+    <p><strong>Draw a diagram that shows the following position vectors:</strong></p>
+    <ul>
+      <li>$\mathbf{r_{MS}}$: the position of Mars relative to the Sun</li>
+      <li>$\mathbf{r_{ES}}$: the position of Earth relative to the Sun</li>
+      <li>$\mathbf{r_{ME}}$ the position of Mars relative to Earth</li>
+    </ul>
+    <p>Start by drawing the circular orbits of Mars and Earth below so that they are centered at the Sun. Then, mark the positions of the planets and draw the vectors. If you need assistance, reveal the hint below!</p>
+    <p><strong>Draw your model below:</strong></p>
+
+    <div class="ext-sketch" id="sketch1">
+      <div class="ext-sketch-bar">
+        <span class="ext-sketch-title">Your sketch</span>
+        <div class="ext-sketch-tools">
+          <div class="ext-pens" role="group" aria-label="Pen colour">
+            <button class="ext-pen active" data-pen="#e7ecf6" style="color:#e7ecf6" title="White" aria-label="White pen"></button>
+            <button class="ext-pen" data-pen="#f0a675" style="color:#f0a675" title="Mars (orange)" aria-label="Orange pen"></button>
+            <button class="ext-pen" data-pen="#2bc5ff" style="color:#2bc5ff" title="Earth (blue)" aria-label="Blue pen"></button>
+            <button class="ext-pen" data-pen="#5fe0c0" style="color:#5fe0c0" title="Teal" aria-label="Teal pen"></button>
+          </div>
+          <button class="ext-sketch-btn" data-undo type="button">&#8630; Undo</button>
+          <button class="ext-sketch-btn" data-clear type="button">&#8634; Clear</button>
+        </div>
+      </div>
+      <canvas class="ext-sketch-canvas" id="sketch1-canvas"></canvas>
+      <p class="ext-sketch-note">Draw right on the panel with your mouse or finger. The two faint orbits and the Sun are there to start you off &mdash; mark where each planet sits, then draw and label the three vectors. Switch pen colours to match Mars, Earth, and the connecting vector.</p>
+    </div>
+
+    <div class="derivation">
+      <div class="derivation-head">
+        <span class="derivation-eyebrow">Stuck? Reveal the hint</span>
+      </div>
+      <div class="step-slide active">
+        <div class="step">
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="ext-1">Reveal hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="ext-1">0 / 1</span>
+            <button class="hint-reset" data-reset="ext-1">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="ext-1"></div></div>
+            <span class="solution-pct-label" data-meterlabel="ext-1">0% of the solution revealed</span>
+          </div>
+          <div class="hints-container" data-hints="ext-1">
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Hint</span><span class="hint-pct">100%</span></div>
+              <p><em>You can use this diagram; label the planets and the vectors.</em></p>
+              <figure class="ext-fig">
+                <svg viewBox="0 0 620 360" role="img" aria-label="Two concentric circular orbits centered on the Sun, unlabeled.">
+                  <defs>
+                    <radialGradient id="ext-a-glow"><stop offset="0%" stop-color="rgba(255,205,120,.55)"></stop><stop offset="100%" stop-color="rgba(255,205,120,0)"></stop></radialGradient>
+                  </defs>
+                  <circle class="o-orbit" cx="310" cy="180" r="160"></circle>
+                  <circle class="o-orbit" cx="310" cy="180" r="96"></circle>
+                  <circle cx="310" cy="180" r="22" fill="url(#ext-a-glow)"></circle>
+                  <circle cx="310" cy="180" r="5" fill="#ffd48a"></circle>
+                  <text class="t-body" x="298" y="185" text-anchor="end">Sun</text>
+                </svg>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="reveal-result" data-reveal="ext-sol-1">Reveal the solution</button>
+    <div class="result-hidden ext-aux" data-revealtarget="ext-sol-1" hidden>
+      <p>We begin drawing our model under the following assumptions:</p>
+      <ul>
+        <li>The Sun is fixed at the origin or the center of our diagram.</li>
+        <li>Earth and Mars move in <strong>circular</strong> orbits.</li>
+        <li>The orbits of Earth and Mars are co-planar.</li>
+      </ul>
+      <p>Additionally, our diagram must contain the following vectors:</p>
+      <ul>
+        <li>$\mathbf{r_{MS}}$: the position of Mars relative to the Sun, or the vector extending from the Sun to Mars.</li>
+        <li>$\mathbf{r_{ES}}$: the position of Earth relative to the Sun, or the vector extending from the Sun to Earth.</li>
+        <li>$\mathbf{r_{ME}}$ the position of Mars relative to Earth, or the vector extending from the Earth to Mars.</li>
+      </ul>
+      <p>This is illustrated in the completed diagram below.</p>
+
+      <figure id="fig-ext-1" class="fig-live">
+        <div class="simulator" id="mpv">
+          <div class="mpv-wrap">
+            <div class="mpv-stage">
+              <svg id="mpv-svg" role="img" aria-labelledby="mpv-svg-title mpv-svg-desc">
+                <title id="mpv-svg-title">Position vectors of Earth and Mars</title>
+                <desc id="mpv-svg-desc">The Sun is at the origin. The diagram shows the vector from the Sun to Earth, the vector from the Sun to Mars, and the vector from Earth to Mars.</desc>
+                <defs>
+                  <marker id="mpv-a-es" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2bc5ff"></path></marker>
+                  <marker id="mpv-a-ms" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#f0a675"></path></marker>
+                  <marker id="mpv-a-me" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5fe0c0"></path></marker>
+                  <marker id="mpv-a-ax" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="rgba(150,175,225,.5)"></path></marker>
+                  <radialGradient id="mpv-sunglow">
+                    <stop offset="0%" stop-color="rgba(255,205,120,.55)"></stop>
+                    <stop offset="100%" stop-color="rgba(255,205,120,0)"></stop>
+                  </radialGradient>
+                </defs>
+                <line class="mpv-axis" id="mpv-xaxis" marker-end="url(#mpv-a-ax)"></line>
+                <line class="mpv-axis" id="mpv-yaxis" marker-end="url(#mpv-a-ax)"></line>
+                <circle class="mpv-orbit" id="mpv-orbit-m"></circle>
+                <circle class="mpv-orbit" id="mpv-orbit-e"></circle>
+                <line class="mpv-vec mpv-vec-ms" id="mpv-v-ms" marker-end="url(#mpv-a-ms)"></line>
+                <line class="mpv-vec mpv-vec-es" id="mpv-v-es" marker-end="url(#mpv-a-es)"></line>
+                <line class="mpv-vec mpv-vec-me" id="mpv-v-me" marker-end="url(#mpv-a-me)"></line>
+                <circle id="mpv-sun-glow" fill="url(#mpv-sunglow)"></circle>
+                <circle id="mpv-sun" r="6.5" fill="#ffd48a"></circle>
+                <circle id="mpv-earth" r="6" fill="#4f9fff" stroke="#bcd9ff" stroke-width="1.3"></circle>
+                <circle id="mpv-mars" r="6" fill="#ff7a59" stroke="#ffc6b4" stroke-width="1.3"></circle>
+              </svg>
+              <span class="mpv-label vec" id="mpv-lab-es">$\mathbf{r_{ES}}$</span>
+              <span class="mpv-label vec" id="mpv-lab-ms">$\mathbf{r_{MS}}$</span>
+              <span class="mpv-label vec" id="mpv-lab-me">$\mathbf{r_{ME}}$</span>
+              <span class="mpv-label body" id="mpv-lab-sun">Sun (S)</span>
+              <span class="mpv-label body" id="mpv-lab-earth">Earth (E)</span>
+              <span class="mpv-label body" id="mpv-lab-mars">Mars (M)</span>
+              <span class="mpv-label axis" id="mpv-lab-x">$x$</span>
+              <span class="mpv-label axis" id="mpv-lab-y">$y$</span>
+            </div>
+          </div>
+          <div class="sim-controls">
+            <div class="sim-control" style="flex:1 1 100%">
+              <label for="mpv-day">Time from alignment: <span class="value" id="mpv-day-value">120 days</span></label>
+              <input id="mpv-day" type="range" min="0" max="780" step="1" value="120">
+            </div>
+          </div>
+        </div>
+        <figcaption><span class="label">Fig. 1</span>The completed model: the Sun at the origin, Earth and Mars on co-planar circular orbits, and the three position vectors $\mathbf{r_{MS}}$, $\mathbf{r_{ES}}$, and $\mathbf{r_{ME}}$.</figcaption>
+      </figure>
+      <button class="result-reset" data-resultreset="ext-sol-1">&#8634; Hide the solution</button>
+    </div>
+  </section>
+
+  <!-- ===================== 2. VECTORS ===================== -->
+  <section class="section" id="ext-vectors">
+    <h3 class="section-heading">2. Vectors</h3>
+    <p><strong>Write an equation relating the vectors you drew above.</strong></p>
+
+    <div class="derivation">
+      <div class="derivation-head">
+        <span class="derivation-eyebrow">Work it out &middot; one hint at a time</span>
+      </div>
+      <div class="step-slide active">
+        <div class="step">
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="ext-2">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="ext-2">0 / 4</span>
+            <button class="hint-reset" data-reset="ext-2">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="ext-2"></div></div>
+            <span class="solution-pct-label" data-meterlabel="ext-2">0% of the solution revealed</span>
+          </div>
+          <div class="hints-container" data-hints="ext-2">
+            <div class="hint" data-pct="25"><div class="hint-head"><span class="hint-label">Hint 1</span><span class="hint-pct">&#8776;25%</span></div>
+              <p>Suppose you are standing at the Sun. You decide to follow the path described by the vector $\mathbf{r_{ES}}$. Question: <strong>Where do you end up?</strong></p>
+            </div>
+            <div class="hint" data-pct="50"><div class="hint-head"><span class="hint-label">Hint 2</span><span class="hint-pct">&#8776;50%</span></div>
+              <p>You will end up at Earth.</p>
+              <p>Now, imagine you start from earth and follow the path described by $\mathbf{r_{ME}}$. Again, <strong>where do you end up?</strong></p>
+            </div>
+            <div class="hint" data-pct="75"><div class="hint-head"><span class="hint-label">Hint 3</span><span class="hint-pct">&#8776;75%</span></div>
+              <p>You will end up at Mars!</p>
+              <p>So, following $\mathbf{r_{ES}}$ and then $\mathbf{r_{ME}}$ takes you from the Sun to Mars. But can you think of another way to get from the Sun to Mars?</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <p>As our diagram shows, you can travel to Mars directly from the Sun by following $\mathbf{r_{MS}}$!</p>
+              <p>Therefore, following $\mathbf{r_{ES}}$ and then $\mathbf{r_{ME}}$ has the same overall result as following $\mathbf{r_{MS}}$.</p>
+              <p>With this in mind, <strong>can you write an equation that expresses this relationship?</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="reveal-result" data-reveal="ext-sol-2">Reveal the solution</button>
+    <div class="result-hidden ext-aux" data-revealtarget="ext-sol-2" hidden>
+      <p>The equation that represents this relationship is</p>
+      <div class="equation-boxed">$$\mathbf{r_{ES}} + \mathbf{r_{ME}} = \mathbf{r_{MS}}.$$</div>
+      <div class="going-further">
+        <span class="gf-label">Key Idea</span>
+        <p>Vectors can be added head-to-tail to represent a sequence of motion or displacement.</p>
+      </div>
+      <button class="result-reset" data-resultreset="ext-sol-2">&#8634; Hide the solution</button>
+    </div>
+  </section>
+
+  <!-- ===================== 3. CIRCULAR MOTION ===================== -->
+  <section class="section" id="ext-circular">
+    <h3 class="section-heading">3. Circular Motion</h3>
+    <p>Let&rsquo;s say</p>
+    <ul>
+      <li>$r_M$: the radius of Mars&rsquo; orbit.</li>
+      <li>$\omega_M$: the angular speed of Mars&rsquo; orbit.</li>
+      <li>$r_E$: the radius of Earth&rsquo;s orbit.</li>
+      <li>$\omega_E$: the angular speed of Earth&rsquo;s orbit.</li>
+      <li>$t$: the time that has passed since a starting point at which both Earth and Mars are on the $x$-axis.</li>
+    </ul>
+    <p>Assign a two-dimensional Cartesian coordinate system to your diagram, and <strong>write the components of all three vectors in terms of $r_M$, $\omega_M$, $r_E$, $\omega_E$, and $t$.</strong> If you are stuck, reveal the hints below!</p>
+
+    <div class="derivation">
+      <div class="derivation-head">
+        <span class="derivation-eyebrow">Work it out &middot; one hint at a time</span>
+      </div>
+      <div class="step-slide active">
+        <div class="step">
+          <div class="hint-controls">
+            <button class="hint-btn" data-step="ext-3">Reveal next hint <span class="arrow">&rarr;</span></button>
+            <span class="hint-progress" data-progress="ext-3">0 / 4</span>
+            <button class="hint-reset" data-reset="ext-3">reset</button>
+          </div>
+          <div class="solution-meter">
+            <div class="solution-track"><div class="solution-fill" data-meter="ext-3"></div></div>
+            <span class="solution-pct-label" data-meterlabel="ext-3">0% of the solution revealed</span>
+          </div>
+          <div class="hints-container" data-hints="ext-3">
+            <div class="hint" data-pct="22"><div class="hint-head"><span class="hint-label">Hint 1</span><span class="hint-pct">&#8776;22%</span></div>
+              <figure class="ext-fig">
+                <svg viewBox="0 0 600 480" role="img" aria-label="Sun at the origin with x and y axes; Earth on the inner orbit and Mars on the outer orbit in the first quadrant, with their angular positions marked.">
+                  <defs>
+                    <marker id="ext-ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="rgba(150,175,225,.55)"></path></marker>
+                    <radialGradient id="ext-c-glow"><stop offset="0%" stop-color="rgba(255,205,120,.5)"></stop><stop offset="100%" stop-color="rgba(255,205,120,0)"></stop></radialGradient>
+                  </defs>
+                  <circle class="o-orbit" cx="270" cy="250" r="180"></circle>
+                  <circle class="o-orbit" cx="270" cy="250" r="110"></circle>
+                  <line class="o-axis" x1="55" y1="250" x2="560" y2="250" marker-end="url(#ext-ax)"></line>
+                  <line class="o-axis" x1="270" y1="455" x2="270" y2="38" marker-end="url(#ext-ax)"></line>
+                  <line class="o-drop" x1="408" y1="134" x2="408" y2="250"></line>
+                  <path class="o-arcE" d="M 322 250 A 52 52 0 0 0 318.9 232.2"></path>
+                  <path class="o-arcM" d="M 350 250 A 80 80 0 0 0 331.3 198.6"></path>
+                  <line class="o-rM" x1="270" y1="250" x2="408" y2="134"></line>
+                  <line class="o-rE" x1="270" y1="250" x2="373" y2="212"></line>
+                  <circle cx="270" cy="250" r="20" fill="url(#ext-c-glow)"></circle>
+                  <circle cx="270" cy="250" r="5" fill="#ffd48a"></circle>
+                  <circle cx="373" cy="212" r="5" fill="#4f9fff"></circle>
+                  <circle cx="408" cy="134" r="5" fill="#ff7a59"></circle>
+                  <text class="t-body" x="262" y="272" text-anchor="end">Sun</text>
+                  <text class="t-body" x="384" y="210" text-anchor="start">Earth</text>
+                  <text class="t-body" x="418" y="129" text-anchor="start">Mars</text>
+                  <text class="t-axis" x="548" y="243">x</text>
+                  <text class="t-axis" x="283" y="52">y</text>
+                  <text class="t-rM" x="330" y="176">r<tspan class="t-sub" dy="4">M</tspan></text>
+                  <text class="t-rE" x="352" y="204">r<tspan class="t-sub" dy="4">E</tspan></text>
+                  <text class="t-wM" x="356" y="234">&#969;<tspan class="t-sub" dy="4">M</tspan><tspan dy="-4"> t</tspan></text>
+                  <text class="t-wE" x="326" y="246">&#969;<tspan class="t-sub" dy="4">E</tspan><tspan dy="-4"> t</tspan></text>
+                </svg>
+              </figure>
+              <p>Suppose a planet is moving around a circle of radius $r$, and its angular position is $\theta$. If the Sun is at the origin, how can you express the planet&rsquo;s $x$- and $y$-coordinates in terms of $r$ and $\theta$?</p>
+            </div>
+            <div class="hint" data-pct="48"><div class="hint-head"><span class="hint-label">Hint 2</span><span class="hint-pct">&#8776;48%</span></div>
+              <p>Recall that in a right triangle,</p>
+              <div class="equation">$$\cos\theta = \frac{x}{r}, \qquad \sin\theta = \frac{y}{r}.$$</div>
+              <p>How can we write $x$ and $y$ in terms of $\cos\theta$, $\sin\theta$, and $r$? Rewriting the above-mentioned equations leads us to</p>
+              <div class="equation">$$x = r\cos\theta \qquad \text{and} \qquad y = r\sin\theta.$$</div>
+            </div>
+            <div class="hint" data-pct="72"><div class="hint-head"><span class="hint-label">Hint 3</span><span class="hint-pct">&#8776;72%</span></div>
+              <p>Consider Mars. Its angular speed is $\omega_M$, so after time $t$, what is its angular position $\theta_M$?</p>
+              <p>Use the same idea for Earth. Its angular speed is $\omega_E$, so what is its angular position $\theta_E$?</p>
+            </div>
+            <div class="hint answer" data-pct="100"><div class="hint-head"><span class="hint-label">Answer</span><span class="hint-pct">100%</span></div>
+              <p>Once you have the coordinates of Earth and Mars, note that rearranging the result from Problem 2, we have</p>
+              <div class="equation">$$\mathbf{r_{ME}} = \mathbf{r_{MS}} - \mathbf{r_{ES}}.$$</div>
+              <p>Can you use this to find the components of $\mathbf{r_{ME}}$?</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="reveal-result" data-reveal="ext-sol-3">Reveal the solution</button>
+    <div class="result-hidden ext-aux" data-revealtarget="ext-sol-3" hidden>
+      <p>If a point is moving on a circle of radius $r$ with angular position $\theta$, its Cartesian coordinates are</p>
+      <div class="equation">$$x = r\cos\theta, \qquad y = r\sin\theta.$$</div>
+      <p>Since both planets begin on the $x$-axis and move with constant angular speed, their angular positions after time $t$ are</p>
+      <div class="equation">$$\theta_M = \omega_M t$$</div>
+      <p>for Mars, and</p>
+      <div class="equation">$$\theta_E = \omega_E t$$</div>
+      <p>for Earth.</p>
+      <p>Therefore, the position vector of Mars relative to the Sun is</p>
+      <div class="equation">$$\mathbf{r_{MS}}(t) = \langle r_M\cos(\omega_M t),\, r_M\sin(\omega_M t)\rangle$$</div>
+      <p>and the position vector of Earth relative to the Sun is</p>
+      <div class="equation">$$\mathbf{r_{ES}}(t) = \langle r_E\cos(\omega_E t),\, r_E\sin(\omega_E t)\rangle.$$</div>
+      <p>Problem 2 tells us that</p>
+      <div class="equation">$$\mathbf{r_{ES}} + \mathbf{r_{ME}} = \mathbf{r_{MS}},$$</div>
+      <p>which can be rewritten as</p>
+      <div class="equation">$$\mathbf{r_{ME}} = \mathbf{r_{MS}} - \mathbf{r_{ES}}.$$</div>
+      <p>Substituting our expressions yields</p>
+      <div class="equation">$$\mathbf{r_{ME}}(t) = \langle r_M\cos(\omega_M t),\, r_M\sin(\omega_M t)\rangle - \langle r_E\cos(\omega_E t),\, r_E\sin(\omega_E t)\rangle,$$</div>
+      <p>and subtracting the components gives</p>
+      <div class="equation">$$\mathbf{r_{ME}}(t) = \langle r_M\cos(\omega_M t) - r_E\cos(\omega_E t),\; r_M\sin(\omega_M t) - r_E\sin(\omega_E t)\rangle.$$</div>
+      <p>Thus, we&rsquo;ve written the components of all three vectors in terms of the given values.</p>
+      <button class="result-reset" data-resultreset="ext-sol-3">&#8634; Hide the solution</button>
+    </div>
+  </section>
+
+</div>
+</section>
