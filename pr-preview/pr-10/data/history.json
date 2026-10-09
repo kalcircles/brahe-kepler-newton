@@ -1,0 +1,52 @@
+{
+  "nodes": [
+    {
+      "id": "brahe",
+      "label": "Tycho Brahe",
+      "type": "person",
+      "x": 200,
+      "y": 150,
+      "description": "Collected extremely precise astronomical observations without a telescope."
+    },
+    {
+      "id": "kepler",
+      "label": "Johannes Kepler",
+      "type": "person",
+      "x": 450,
+      "y": 200,
+      "description": "Used Brahe's data to derive the laws of planetary motion."
+    },
+    {
+      "id": "newton",
+      "label": "Isaac Newton",
+      "type": "person",
+      "x": 700,
+      "y": 150,
+      "description": "Explained Kepler's laws using universal gravitation."
+    },
+    {
+      "id": "ellipses",
+      "label": "Elliptical Orbits",
+      "type": "concept",
+      "x": 450,
+      "y": 350,
+      "description": "Planets move in ellipses with the Sun at one focus."
+    },
+    {
+      "id": "inverse_square",
+      "label": "Inverse Square Law",
+      "type": "concept",
+      "x": 700,
+      "y": 350,
+      "description": "Force decreases as 1/r² with distance."
+    }
+  ],
+
+  "links": [
+    { "from": "brahe", "to": "kepler", "label": "data for" },
+    { "from": "kepler", "to": "ellipses", "label": "derived" },
+    { "from": "kepler", "to": "newton", "label": "inspired" },
+    { "from": "newton", "to": "inverse_square", "label": "explained by" },
+    { "from": "inverse_square", "to": "ellipses", "label": "produces" }
+  ]
+}
