@@ -1278,7 +1278,7 @@
 
     <p>This creates two arrays, both with $N$ zeros. This is our <strong>Storage</strong>.</p>
 
-    <p>Make sure you separate two things here, because this is where people tend to get stuck. The variables <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code> hold where the planet is <em>right now</em>, and they get overwritten on every single step, since the loop needs the current position to compute the next one. The arrays <code data-vartext="@xs@">xs</code> and <code data-vartext="@ys@">ys</code> keep every position the planet has visited, and those are what we plot at the end.</p>
+    <p>Make sure you keep two things separate here. The variables <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code> hold where the planet is <em>right now</em>, and they get overwritten on every single step, since the loop needs the current position to compute the next one. The arrays <code data-vartext="@xs@">xs</code> and <code data-vartext="@ys@">ys</code> keep every position the planet has visited, and those are what we plot at the end.</p>
 
     <p>Now let&rsquo;s develop the <strong>Simulation Loop</strong> in a new cell of code. We are in the closing stretch!</p>
 
