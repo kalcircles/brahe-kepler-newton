@@ -781,15 +781,15 @@
 
     <p>A simpler way to visualize this law is through the use of a computer simulation in Python, which is exactly what we will be doing on this page. We&rsquo;ll show Kepler&rsquo;s 1st Law, but in an entirely different way, which (in my opinion) can be just as rewarding.</p>
 
-    <p>Here&rsquo;s the idea. We give a planet a starting position and a starting velocity, and we tell the computer exactly one physical rule: Newton&rsquo;s law of gravitation. That&rsquo;s the only rule it gets, and we say nothing at all about ellipses. Then we let it take thousands of tiny steps forward in time and plot every position the planet visits. If Kepler was right, an ellipse should show up on your screen with the Sun at a focus, purely because of the force law.</p>
+    <p>We give a planet a starting position and a starting velocity, and we tell the computer exactly one physical rule, Newton&rsquo;s law of gravitation, without saying anything about ellipses. Then we let it take thousands of tiny steps forward in time and plot every position the planet visits. If Kepler was right, an ellipse should show up on your screen with the Sun at a focus, purely because of the force law.</p>
 
     <h4 class="subheading">2.2 The Plan</h4>
 
-    <p>Since this page is a bit longer than the other two laws, here&rsquo;s where we&rsquo;re going, so you know where each piece fits:</p>
+    <p>This page is a bit longer than the other two laws, so here is an outline of what we&rsquo;ll cover.</p>
 
     <ol>
       <li>The differential equation of motion, from Newton&rsquo;s 2nd Law and the vector form of gravity. (<a class="inline-go" data-jump="k1-eom">Section 3</a>)</li>
-      <li>Initial conditions, so we get the one specific ellipse we asked for instead of some random orbit. (<a class="inline-go" data-jump="k1-ic">Section 4</a>)</li>
+      <li>Initial conditions, which pick out the one ellipse with the $a$ and $e$ we chose. (<a class="inline-go" data-jump="k1-ic">Section 4</a>)</li>
       <li>The Vis-Viva equation, which tells us how hard to kick the planet. This is the only real derivation on the page. (<a class="inline-go" data-jump="k1-visviva">Section 5</a>)</li>
       <li>Euler&rsquo;s method, which is how we get a computer to march the equation forward in time. (<a class="inline-go" data-jump="k1-euler">Section 6</a>)</li>
     </ol>
@@ -815,9 +815,9 @@
     <div class="equation">$$\begin{aligned} \sum \vec{F} &= m\vec{a} \\ \vec{F}_g &= m\vec{a} \\ -\frac{GMm}{r^2}\, \hat{r} &= m\vec{a}. \end{aligned}$$</div>
     <p>$\vec{a}$ might as well be written as $\mathrm{d}^2\vec{r}/\mathrm{d} t^2$. So we can now write</p>
     <div class="equation">$$\begin{aligned} m\frac{\mathrm{d}^2 \vec{r}}{\mathrm{d} t^2} &= -\frac{GMm}{r^2}\, \hat{r} \\[2pt] \frac{\mathrm{d}^2\vec{r}}{\mathrm{d} t^2} &= -\frac{GM}{r^2}\, \hat{r}. \end{aligned}$$</div>
-    <p>Notice that the planet&rsquo;s mass $m$ cancelled clean off both sides! This tells us that the orbit doesn&rsquo;t care how heavy the planet is, only how heavy the star is.</p>
+    <p>Notice that the planet&rsquo;s mass $m$ cancelled clean off both sides! This means that a pebble and a planet started from the same spot with the same velocity would trace out exactly the same orbit.</p>
 
-    <p>The whole essence of proving Kepler&rsquo;s 1st Law is simply to solve this differential equation and show that the vector $\vec{r}$ traces out an ellipse over time, with the Sun at one of the foci of that ellipse.</p>
+    <p>To solve this equation on a computer, we first split it into its $x$ and $y$ parts.</p>
 
     <h4 class="subheading">3.1 Splitting It Into Components</h4>
 
@@ -835,9 +835,7 @@
   <section class="section" id="k1-ic">
     <h3 class="section-heading">4. Initial Conditions</h3>
 
-    <p>Obviously, the planet simply doesn&rsquo;t teleport into some idealized ellipse. Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> describe <em>every</em> possible orbit around our star, from a tight little circle to a long skinny cigar. Which one we actually get is decided entirely by where we drop the planet and how hard we push it.</p>
-
-    <p>So the shape of the orbit comes out of the initial conditions rather than the force law, which means picking those conditions carefully is most of the work here.</p>
+    <p>Obviously, the planet simply doesn&rsquo;t teleport into some idealized ellipse. Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> describe <em>every</em> possible orbit around our star, from a tight little circle to a long skinny cigar. The one we get depends on the planet&rsquo;s starting position and starting velocity, so most of the work in this section is choosing those carefully.</p>
 
     <h4 class="subheading">4.1 Setting Up the Start</h4>
 
@@ -857,9 +855,9 @@
     <p>Thus, our starting distance is pinned down:</p>
     <div class="equation-boxed">$$\boxed{x_0 = a(1-e).}$$</div>
 
-    <p>Half of the job is now done: we know <em>where</em> to start the planet for a given $(a,e)$, and we know the kick points straight up. What we don&rsquo;t know yet is how big that kick should be. Kicking it too hard or too gently can distort our desired parameters $(a, e)$ off the bat. Surprisingly, there&rsquo;s only exactly one speed that gives us the ellipse we asked for.</p>
+    <p>So far we know <em>where</em> to start the planet for a given $(a,e)$, and we know the kick points straight up. What we don&rsquo;t know yet is how big that kick should be. If we kick it too hard or too gently, the orbit comes out with a different $a$ and $e$ than the ones we picked, and there is exactly one speed that gets both right.</p>
 
-    <p>Unfortunately, the hardest part about controlling the shape of the orbit in code is deriving a formula that gives you that correct initial velocity. That&rsquo;s what the next section is for.</p>
+    <p>Unfortunately, the hardest part about controlling the shape of the orbit in code is deriving a formula for that initial velocity, which we do in the next section.</p>
   </section>
 
   <!-- ===================== 5. VIS-VIVA (sec:visviva) ===================== -->
@@ -904,7 +902,7 @@
     <div class="equation">$$\begin{aligned} \epsilon &= \frac{1}{2}v_p^2 - \frac{GM}{r_p} \\[2pt] \epsilon &= \frac{1}{2} \left[ \frac{GM(1+e)}{a(1-e)}\right] - \frac{GM}{a(1-e)} \\[2pt] \epsilon &= \frac{GM}{a(1-e)} \left[ \frac{1+e}{2} - 1 \right] \\[2pt] \epsilon &= \frac{GM}{a(1-e)} \cdot \frac{e-1}{2}. \end{aligned}$$</div>
     <p>The $(1-e)$ cancels against the $(e-1)$ up to a sign, and carrying out the algebra we obtain the result</p>
     <div class="equation-boxed">$$\boxed{\epsilon = -\frac{GM}{2a}.}$$</div>
-    <p>This highlights a beautiful property of orbital mechanics: the total specific orbital energy depends strictly on the mass of the central star and the size of the orbit&rsquo;s semi-major axis $(a)$, completely independent of the eccentricity $e$! A nearly circular orbit and a long skinny one with the same $a$ carry exactly the same energy per unit mass. It&rsquo;s also the reason the Vis-Viva equation comes out as clean as it does.</p>
+    <p>So the total specific orbital energy depends only on the mass of the central star and the semi-major axis $a$ of the orbit. The eccentricity $e$ doesn&rsquo;t appear in it at all! A nearly circular orbit and a long skinny one with the same $a$ carry exactly the same energy per unit mass.</p>
 
     <p>The negative sign, by the way, is the signature of a <em>bound</em> orbit. A planet with $\epsilon \geq 0$ has reached or passed the escape speed, and its path is no longer periodic.</p>
 
@@ -914,7 +912,7 @@
     <div class="equation">$$\begin{aligned} \frac{1}{2} v^2 -\frac{GM}{r} &= \epsilon \\[2pt] \frac{1}{2} v^2 -\frac{GM}{r} &= -\frac{GM}{2a}. \end{aligned}$$</div>
     <p>After isolating $v$, we finally arrive at the <strong>Vis-Viva equation</strong>:</p>
     <div class="equation-boxed">$$\boxed{v = \sqrt{GM \left( \frac{2}{r} - \frac{1}{a}\right)}}.$$</div>
-    <p>The Vis-Viva equation gives the magnitude of the velocity at any point of the planet&rsquo;s orbit in terms of the semi-major axis $a$ and its variable orbit radius $r$. Notice that there&rsquo;s no $e$ anywhere in it! It relates the speed to the current radius and the semi-major axis, and that&rsquo;s all. Eccentricity never enters.</p>
+    <p>The Vis-Viva equation gives the magnitude of the velocity at any point of the planet&rsquo;s orbit in terms of the semi-major axis $a$ and its variable orbit radius $r$. Notice that there&rsquo;s no $e$ anywhere in it, for the same reason it dropped out of the energy.</p>
   </section>
 
   </div>
@@ -1004,7 +1002,7 @@
       <div class="step-slide">
         <div class="step">
           <div class="step-label">Step 3: The Energy of an Orbit</div>
-          <p class="step-prompt">Take that expression for $v_p^2$ and substitute it back into the specific energy evaluated at the perihelion. Simplify as far as it will go&mdash;the result is cleaner than you might expect.</p>
+          <p class="step-prompt">Take that expression for $v_p^2$ and substitute it back into the specific energy evaluated at the perihelion. Simplify as far as it will go.</p>
 
           <div class="hint-controls">
             <button class="hint-btn" data-step="1b-3">Reveal next hint <span class="arrow">&rarr;</span></button>
@@ -1070,19 +1068,19 @@
   <section class="section" id="k1-launch">
     <h4 class="subheading">5.5 Application of the Vis-Viva Equation</h4>
 
-    <p>So how does the eccentricity get into our simulation at all? Through the starting distance, and nowhere else.</p>
+    <p>Now we can use the Vis-Viva equation to find the size of the initial kick.</p>
 
     <p>Our initial velocity kick $(0, v_{y0})$ occurs at a position $x_0 = a(1-e)$ to the right of the Sun, and since the kick is entirely in the $y$-direction, $v_{y0}$ <em>is</em> the full speed at that moment. Plugging into the Vis-Viva equation, we obtain the long-desired result</p>
     <div class="equation">$$v_{y0} = \sqrt{GM \left( \frac{2}{a(1-e)} - \frac{1}{a} \right)}$$</div>
     <div class="equation-boxed">$$\boxed{v_{y0} = \sqrt{GM \left( \frac{1+e}{a(1-e)} \right)}.}$$</div>
-    <p>So $e$ shows up twice in our setup, and both times it&rsquo;s an initial condition: once in $x_0 = a(1-e)$, and once in the kick above. Those two numbers are everything our code needs in order to produce the ellipse we asked for.</p>
+    <p>So $e$ enters our setup twice, and only through the initial conditions, once in $x_0 = a(1-e)$ and once in the kick above.</p>
   </section>
 
   <!-- ===================== 6. EULER'S METHOD (sec:euler) ===================== -->
   <section class="section" id="k1-euler">
     <h3 class="section-heading">6. Euler&rsquo;s Method</h3>
 
-    <p>We have the physics and we have the initial conditions. The one thing missing is time. Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> give us the planet&rsquo;s <em>acceleration</em> right now, but what we actually want to plot is its <em>position</em> over a whole orbit. So we need a way to get from one to the other.</p>
+    <p>Equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a> give us the planet&rsquo;s <em>acceleration</em> right now, but what we actually want to plot is its <em>position</em> over a whole orbit, so we need a way to step forward in time from one to the other.</p>
 
     <p>We want to plot the position over time, but in order to do so, we first need to find the velocity at each time during the orbit. Mathematically, let us see how this arises.</p>
 
@@ -1104,7 +1102,7 @@
     <div class="equation">$$\begin{aligned} v_{x,f} &= v_{x,i} + a_x \Delta t \\ v_{y,f} &= v_{y,i} + a_y \Delta t \\ x_f &= x_i + v_{x,f}\, \Delta t \\ y_f &= y_i + v_{y,f}\, \Delta t. \end{aligned}$$</div>
     <p>Take a close look at those last two lines: the position update uses $v_{x,f}$ and $v_{y,f}$, the <em>new</em> velocities, not the old ones. So the order we do things inside our loop actually matters. Each time through, we compute the acceleration from the current position, then update the velocities, and only then update the positions using those brand-new velocities.</p>
 
-    <p>Do not skip past this one. If you update the position first, using the old velocity, the simulation slowly gains energy and your &ldquo;ellipse&rdquo; spirals outward into a spring instead of closing up on itself. Updating the velocity first keeps the orbit stable over many periods, even with identical physics and an identical $\Delta t$.</p>
+    <p>Be careful with the order of these two updates. If you update the position first, using the old velocity, the simulation slowly gains energy and your &ldquo;ellipse&rdquo; spirals outward like a spring. If you update the velocity first, the orbit stays closed for many periods with the same physics and the same $\Delta t$.</p>
   </section>
 
   <!-- ===================== 7. SETTING UP THE CODE (sec:code) ===================== -->
@@ -1131,7 +1129,7 @@
     </ol>
     <p>Some of these cells will be either fully given, partially given, or you will have to figure them out on your own! Our overall goal for this step-by-step run-through is to plot the elliptical orbit of Mercury about the Sun.</p>
 
-    <p>One rule for the whole program: everything stays in SI units (meters, kilograms, seconds) until the very last plot. We convert to AU once, at the end, just for the axis labels.</p>
+    <p>Everything in the program stays in SI units (meters, kilograms, seconds) until the very last plot, where we convert to AU just for the axis labels.</p>
 
     <p>At the end of the process, I&rsquo;ll hand you a problem to try on your own, for a different planet in our solar system.</p>
   </section>
@@ -1219,7 +1217,7 @@
 
     <div class="code-cell" data-cell="packages"></div>
 
-    <p>Quickly: <code>numpy</code> handles the arrays we&rsquo;ll store our results in, <code>matplotlib</code> does the plotting, and the last two are what let us animate the orbit inside the notebook instead of just showing a still picture.</p>
+    <p><code>numpy</code> handles the arrays we&rsquo;ll store our results in, <code>matplotlib</code> does the plotting, and the last two imports let us animate the orbit inside the notebook.</p>
 
     <h4 class="subheading">7.2.2 Constants</h4>
     <p>Now, as you know, the calculations involve many constants including $G$, the gravitational constant, $M$, the mass of the Sun, and the unit of an AU. Make sure you label each constant with its name and units in a comment on the right. As an example, this is how you set up a quantity in Python:</p>
@@ -1235,7 +1233,7 @@
     <h4 class="subheading">7.2.3 Orbital Parameters</h4>
     <p>Now let us set the semi-major axis and the eccentricity of the orbit. Through a quick Google search, the eccentricity of Mercury&rsquo;s orbit is 0.206 and its semi-major axis is 0.387 AU. Set up the orbit parameters in the following cell.</p>
 
-    <p>Watch your units here: $e$ is a bare number with no units at all, but $a$ has to come out in meters, so make sure the semi-major axis is written <em>in terms</em> of the AU quantity you defined in the last cell rather than just typing 0.387 on its own.</p>
+    <p>Watch your units here. The eccentricity $e$ has no units, while $a$ has to be in meters, so write the semi-major axis <em>in terms</em> of the AU constant you defined in the last cell. Typing 0.387 on its own would give you an orbit with a semi-major axis of 0.387 meters!</p>
 
     <div class="code-cell" data-cell="params"></div>
 
@@ -1280,7 +1278,7 @@
 
     <p>This creates two arrays, both with $N$ zeros. This is our <strong>Storage</strong>.</p>
 
-    <p>Make sure you separate two things here, because this is where people tend to get stuck. The variables <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code> hold where the planet is <em>right now</em>, and they get overwritten on every single step. The arrays <code data-vartext="@xs@">xs</code> and <code data-vartext="@ys@">ys</code> are the permanent record of everywhere it has been. We need both: the current position to compute the next step, and the full history to draw the orbit at the end.</p>
+    <p>Make sure you separate two things here, because this is where people tend to get stuck. The variables <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code> hold where the planet is <em>right now</em>, and they get overwritten on every single step, since the loop needs the current position to compute the next one. The arrays <code data-vartext="@xs@">xs</code> and <code data-vartext="@ys@">ys</code> keep every position the planet has visited, and those are what we plot at the end.</p>
 
     <p>Now let&rsquo;s develop the <strong>Simulation Loop</strong> in a new cell of code. We are in the closing stretch!</p>
 
@@ -1300,13 +1298,13 @@
     <ul>
       <li><code data-vartext="@r@">r</code> is the planet&rsquo;s current distance from the Sun, and you&rsquo;ve got <code data-vartext="@x@">x</code> and <code data-vartext="@y@">y</code>.</li>
       <li><code data-vartext="@ax@">ax</code> and <code data-vartext="@ay@">ay</code> come straight out of equations <a class="inline-go" data-jump="k1-eq-ax">(1)</a> and <a class="inline-go" data-jump="k1-eq-ay">(2)</a>. They need <code data-vartext="@r@">r</code>, which is why <code data-vartext="@r@">r</code> gets computed first.</li>
-      <li>For the velocities, something like <code data-vartext="@vx@ = @vx@ + @ax@ * @dt@">vx = vx + ax * dt</code> means &ldquo;take the old <code data-vartext="@vx@">vx</code>, add $a_x \Delta t$, and store the answer back in <code data-vartext="@vx@">vx</code>.&rdquo; In Python this is an instruction rather than an equation, and it&rsquo;s exactly our $v_{x,f} = v_{x,i} + a_x \Delta t$ rule.</li>
+      <li>For the velocities, something like <code data-vartext="@vx@ = @vx@ + @ax@ * @dt@">vx = vx + ax * dt</code> means &ldquo;take the old <code data-vartext="@vx@">vx</code>, add $a_x \Delta t$, and store the answer back in <code data-vartext="@vx@">vx</code>.&rdquo; In Python, <code>=</code> means &ldquo;store this value,&rdquo; so the line is an instruction, and it&rsquo;s exactly our $v_{x,f} = v_{x,i} + a_x \Delta t$ rule.</li>
       <li>Remember from <a class="inline-go" data-jump="k1-euler">Section 6</a> that the position updates use the velocities we <em>just</em> calculated. The skeleton above is already in the right order, so don&rsquo;t rearrange it.</li>
     </ul>
     <p>If your plot comes out as a spiral instead of a closed loop, come back and check the order of those last four lines!</p>
 
     <h4 class="subheading">7.2.7 Plotting</h4>
-    <p>Great job! You have just figured out the most mentally challenging part of this derivation. The plotting code will automatically be in your notebook, one cell below the <strong>Simulation Loop</strong>. You don&rsquo;t need to worry about this. It is mainly so that the graph has a nice animation, and has nothing to do with the actual physics. One thing it does do: it divides your stored positions by the AU constant, so your axes read in AU instead of hundreds of billions of meters.</p>
+    <p>Great job! You have just figured out the most mentally challenging part of this derivation. The plotting code will automatically be in your notebook, one cell below the <strong>Simulation Loop</strong>. You don&rsquo;t need to worry about this. It is mainly so that the graph has a nice animation, and has nothing to do with the actual physics. It also divides your stored positions by the AU constant so that the axes are in AU.</p>
 
     <div class="code-cell" data-cell="plotting"></div>
 
@@ -1316,7 +1314,7 @@
   <!-- ===================== THE WHOLE NOTEBOOK ===================== -->
   <section class="section" id="k1-whole">
     <h4 class="subheading">Your Notebook So Far</h4>
-    <p>This is <em>your</em> code, not mine. Every cell above feeds into the block below&mdash;whatever is currently sitting in each one, in your variable names, in notebook order. Type in a cell or hit <strong>Run</strong> and this rebuilds itself on the spot, so it is always the newest version of everything you&rsquo;ve written. When you&rsquo;re happy with it, copy the whole thing into a Jupyter Notebook.</p>
+    <p>The block below collects every cell above, in notebook order and with your variable names, exactly as each one stands right now. It updates whenever you type in a cell or press <strong>Run</strong>. When you&rsquo;re happy with it, copy the whole thing into a Jupyter Notebook.</p>
 
     <div class="code-cell" data-cell="whole"></div>
     <p class="assembled-status" data-whole-status></p>
@@ -1324,9 +1322,9 @@
 
   <!-- ===================== 8. SO WHAT DID WE JUST DO ===================== -->
   <section class="section" id="k1-recap">
-    <h3 class="section-heading">8. So What Did We Just Do?</h3>
+    <h3 class="section-heading">8. Where the Ellipse Came From</h3>
 
-    <p>There should be an ellipse on your screen now, with the Sun at one focus. And look at what went into producing it. We never wrote down the ellipse equation anywhere in that code, and we never mentioned a focus to the computer. The only physics in the entire loop is $-GM/r^3$ times a position component, applied a thousand times in a row!</p>
+    <p>There should be an ellipse on your screen now, with the Sun at one focus. Nowhere in the code did we write the equation of an ellipse or tell the computer where a focus is. Each pass through the loop just multiplies a position component by $-GM/r^3$ to get an acceleration, and the ellipse came out of repeating that a thousand times.</p>
   </section>
 
   <!-- ===================== 9. YOUR TURN ===================== -->
@@ -1349,7 +1347,7 @@
   <section class="section" id="k1-sandbox">
     <h3 class="section-heading">10. The Python Kernel</h3>
 
-    <p>Every cell above runs down here. This is a real Python 3 environment (via Pyodide) with <code>numpy</code> and <code>matplotlib</code> loaded, running <em>inside this page</em>&mdash;nothing gets installed and nothing gets sent anywhere. Cells share one kernel, just like Jupyter, so a variable you define in one is available in the next.</p>
+    <p>Every cell above runs down here. This is a real Python 3 environment (via Pyodide) with <code>numpy</code> and <code>matplotlib</code> loaded, running <em>inside this page</em>, so you don&rsquo;t need to install anything. Cells share one kernel, just like Jupyter, so a variable you define in one is available in the next.</p>
 
     <p>Cell 7 runs here too, animation included. Once Cells 1 through 6 have run, press <strong>Run</strong> on Cell 7 and the orbit plays in its output box, with play, pause and a slider. Building the frames takes a few seconds.</p>
   </section>
