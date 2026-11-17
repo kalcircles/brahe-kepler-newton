@@ -467,6 +467,8 @@
   .cell-out:empty::after{ content:'(no output)'; color:var(--ink-faint); font-style:italic; }
   .cell-out img{ display:block; max-width:100%; height:auto; border-radius:6px; margin:8px 0; background:#fff; }
   .cell-out .py-err{ color:#ff6b6b; }
+  .cell-out .py-muted{ color:var(--ink-faint); font-style:italic; }
+  .cell-out iframe.py-html, .nb-out iframe.py-html{ display:block; width:100%; height:120px; border:0; border-radius:6px; margin:8px 0; background:#fff; }
 
   /* read-through / try-it-yourself switch on the Vis-Viva derivation */
   .mode-switch{
@@ -1349,12 +1351,7 @@
 
     <p>Every cell above runs down here. This is a real Python 3 environment (via Pyodide) with <code>numpy</code> and <code>matplotlib</code> loaded, running <em>inside this page</em>&mdash;nothing gets installed and nothing gets sent anywhere. Cells share one kernel, just like Jupyter, so a variable you define in one is available in the next.</p>
 
-    <div class="going-further">
-      <span class="gf-label">One caveat about this kernel</span>
-      <p>It only has <code>numpy</code> and <code>matplotlib</code>, so the two animation imports (<code>FuncAnimation</code> and <code>IPython.display</code>) won&rsquo;t work here the way they do in a real notebook. Everything up through the simulation loop runs exactly the same. To see the orbit here, use the still-picture version of the plotting cell:</p>
-      <div class="code-cell" data-cell="sandboxplot"></div>
-      <p>Then run it in a proper Jupyter Notebook when you want the animation.</p>
-    </div>
+    <p>Cell 7 runs here too, animation included. Once Cells 1 through 6 have run, press <strong>Run</strong> on Cell 7 and the orbit plays in its output box, with play, pause and a slider. Building the frames takes a few seconds.</p>
   </section>
 
   <div class="nb" data-nb>
@@ -2886,24 +2883,6 @@ document.addEventListener("DOMContentLoaded", function () {
         '\n' +
         'anim = FuncAnimation(fig, update, frames=@N@, interval=10, blit=True)\n' +
         'HTML(anim.to_jshtml())'
-    },
-
-    /* Same plot, minus the animation — the in-page kernel has no IPython. */
-    sandboxplot: {
-      title: 'Still picture, for the in-page kernel', tag: 'given',
-      code:
-        '@xs@_AU = @xs@ / @AU@\n' +
-        '@ys@_AU = @ys@ / @AU@\n' +
-        '\n' +
-        'fig, ax_plot = plt.subplots(figsize=(7, 7))\n' +
-        "ax_plot.set_aspect('equal')\n" +
-        "ax_plot.set_xlabel('x [AU]')\n" +
-        "ax_plot.set_ylabel('y [AU]')\n" +
-        'ax_plot.set_title("Mercury\'s orbit from Newton\'s law of gravitation")\n' +
-        '\n' +
-        "ax_plot.plot(0, 0, 'o', color='orange', markersize=12)\n" +
-        "ax_plot.plot(@xs@_AU, @ys@_AU, 'steelblue', linewidth=1)\n" +
-        'plt.show()'
     }
   };
 
@@ -3419,65 +3398,164 @@ document.addEventListener("DOMContentLoaded", function () {
     else { kLabel.textContent = 'Kernel idle'; }
   }
 
+  const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
+  const FA_CSS = 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css';
+
+  function loadScript(src){
+    return new Promise((resolve, reject) => {
+      if (window.loadPyodide) return resolve();
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = () => { s.remove(); reject(new Error('Could not download Pyodide.')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  // Boot once; if the download fails, forget the failure so the next Run retries.
   function bootKernel(){
     if (pyReady) return pyReady;
     setKernel('loading');
-    pyReady = new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js';
-      s.onload = async () => {
+    pyReady = (async () => {
+      let lastErr;
+      for (let attempt = 0; attempt < 2; attempt++){
         try {
-          const py = await window.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
+          await loadScript(PYODIDE_URL + 'pyodide.js');
+          const py = await window.loadPyodide({ indexURL: PYODIDE_URL });
           await py.loadPackage(['numpy', 'matplotlib']);
-          // Non-interactive backend so figures render to PNG we can grab.
-          // The page collects every open figure after a run, so plt.show() has nothing to
-          // do (left alone it only prints an Agg "cannot be shown" warning).
-          await py.runPythonAsync("import matplotlib; matplotlib.use('AGG')\nimport matplotlib.pyplot as plt\nplt.show = lambda *a, **k: None");
-          // Pyodide has no IPython, so `from IPython.display import HTML` in the
-          // Packages cell would blow up on line 4. Stub it just enough to import.
-          await py.runPythonAsync(IPYTHON_SHIM);
+          py.FS.writeFile('/home/pyodide/_kepler.py', KEPLER_PY);
+          await py.runPythonAsync(
+            "import sys\n" +
+            "if '/home/pyodide' not in sys.path: sys.path.insert(0, '/home/pyodide')\n" +
+            "import _kepler\n" +
+            "import matplotlib.pyplot as plt");
           pyodide = py;
           setKernel('ready');
-          resolve(py);
-        } catch (err) { setKernel('idle'); reject(err); }
-      };
-      s.onerror = () => { setKernel('idle'); reject(new Error('Could not load Pyodide (check your internet connection).')); };
-      document.head.appendChild(s);
-    });
+          return py;
+        } catch (err){ lastErr = err; }
+      }
+      throw lastErr;
+    })();
+    pyReady.catch(() => { pyReady = null; setKernel('idle'); });
     return pyReady;
   }
 
-  // Minimal stand-in for IPython.display so the Packages cell imports cleanly.
-  // HTML() just hands its argument back; nothing here renders a notebook widget.
-  // get_ipython() must exist and return None: matplotlib calls it whenever an
-  // 'IPython' module is loaded, to ask whether it is running inside a notebook.
-  const IPYTHON_SHIM = `
-import sys, types
-if 'IPython' not in sys.modules:
-    _ip = types.ModuleType('IPython')
-    _ip.get_ipython = lambda: None
-    _disp = types.ModuleType('IPython.display')
-    def HTML(obj=None, *a, **k): return obj
-    def display(*a, **k): pass
-    _disp.HTML = HTML
-    _disp.display = display
-    _ip.display = _disp
-    sys.modules['IPython'] = _ip
-    sys.modules['IPython.display'] = _disp
-`;
+  // Python side of the kernel. Lives in its own module so Restart (which wipes
+  // the notebook's variables) can't wipe it too.
+  //  - IPython.display stand-in: HTML(...) as the last line of a cell shows the
+  //    HTML under the cell, the same as in Jupyter.
+  //  - anim.to_jshtml() keeps at most MAX_FRAMES evenly spaced frames (and slows
+  //    the frame rate to match), so the orbit plays at the same speed but takes
+  //    seconds to build instead of a minute, and stays under matplotlib's 20 MB cap.
+  const KEPLER_PY = `
+import sys, types, math, io, base64, warnings
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as plt
+from matplotlib import animation as _animation
 
-  // Grab any open matplotlib figures as base64 PNGs, then close them.
-  const GRAB_FIGS = `
-import io, base64
-import matplotlib.pyplot as _plt
-_out = []
-for _n in _plt.get_fignums():
-    _f = _plt.figure(_n)
-    _b = io.BytesIO()
-    _f.savefig(_b, format='png', dpi=110, bbox_inches='tight')
-    _out.append(base64.b64encode(_b.getvalue()).decode())
-_plt.close('all')
-_out
+warnings.filterwarnings('ignore', message='.*non-GUI backend.*')
+warnings.filterwarnings('ignore', message='.*Matplotlib is currently using agg.*')
+matplotlib.rcParams['animation.embed_limit'] = 200
+
+MAX_FRAMES = 200
+rich = []
+anim_figs = set()
+
+
+class HTML:
+    def __init__(self, data=None, *args, **kwargs):
+        self.data = '' if data is None else str(data)
+    def _repr_html_(self):
+        return self.data
+    def __repr__(self):
+        return '<IPython.core.display.HTML object>'
+
+
+def display(*objs, **kwargs):
+    for obj in objs:
+        rep = obj._repr_html_() if hasattr(obj, '_repr_html_') else None
+        if rep:
+            rich.append(rep)
+        elif not isinstance(obj, matplotlib.figure.Figure):
+            print(repr(obj))
+
+
+_ipython = types.ModuleType('IPython')
+_ipython_display = types.ModuleType('IPython.display')
+_ipython_display.HTML = HTML
+_ipython_display.display = display
+_ipython.display = _ipython_display
+_ipython.get_ipython = lambda: None   # pyplot asks; None means 'not a notebook'
+sys.modules['IPython'] = _ipython
+sys.modules['IPython.display'] = _ipython_display
+
+
+_orig_to_jshtml = _animation.Animation.to_jshtml
+
+def _to_jshtml(self, fps=None, embed_frames=True, default_mode=None):
+    anim_figs.add(id(self._fig))
+    if hasattr(self, '_html_representation') or not hasattr(self, 'new_saved_frame_seq'):
+        return _orig_to_jshtml(self, fps, embed_frames, default_mode)
+    frames = list(self.new_saved_frame_seq())
+    step = max(1, math.ceil(len(frames) / MAX_FRAMES))
+    keep = frames[::step]
+    if frames and (len(frames) - 1) % step:
+        keep.append(frames[-1])
+    if fps is None and getattr(self, '_interval', None):
+        fps = 1000 / (self._interval * step)
+    self.new_saved_frame_seq = lambda: iter(keep)
+    try:
+        return _orig_to_jshtml(self, fps, embed_frames, default_mode)
+    finally:
+        del self.new_saved_frame_seq
+
+_animation.Animation.to_jshtml = _to_jshtml
+
+
+def outputs(result=None):
+    html = list(rich)
+    rich.clear()
+    text = None
+    if result is not None:
+        rep = None
+        if hasattr(result, '_repr_html_'):
+            try:
+                rep = result._repr_html_()
+            except Exception:
+                rep = None
+        if rep:
+            html.append(rep)
+        else:
+            text = repr(result)
+    return html, text
+
+
+def grab_figs():
+    out = []
+    for num in plt.get_fignums():
+        fig = plt.figure(num)
+        if id(fig) in anim_figs:
+            continue
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', dpi=110, bbox_inches='tight')
+        out.append(base64.b64encode(buf.getvalue()).decode())
+    plt.close('all')
+    anim_figs.clear()
+    return out
+
+
+def reset():
+    import __main__
+    plt.close('all')
+    rich.clear()
+    anim_figs.clear()
+    keep = {'__name__', '__doc__', '__package__', '__loader__', '__spec__', '__builtins__'}
+    ns = vars(__main__)
+    for name in list(ns):
+        if name not in keep:
+            del ns[name]
+    ns['plt'] = plt
 `;
 
   // ----- cell model -----
@@ -3542,6 +3620,114 @@ _out
   }
 
   // ----- running -----
+  // One cell at a time, even if Run is clicked on several cells at once.
+  let queue = Promise.resolve();
+  function enqueue(fn){
+    const p = queue.then(fn, fn);
+    queue = p.catch(() => {});
+    return p;
+  }
+
+  // Drop Pyodide's own frames from a traceback; keep the student's.
+  function trimTraceback(msg){
+    const lines = String(msg).replace(/\s+$/, '').split('\n');
+    const i = lines.findIndex(l => /^\s*File "<exec>"/.test(l));
+    if (i < 0) return lines.join('\n');
+    return ['Traceback (most recent call last):'].concat(lines.slice(i)).join('\n');
+  }
+
+  // HTML output (e.g. the orbit animation) goes in an iframe so its own
+  // <script> tags run and its styles stay out of the page.
+  function showHTML(out, html){
+    html = html.replace(/https?:\/\/maxcdn\.bootstrapcdn\.com\/font-awesome\/[\d.]+\/css\/font-awesome\.min\.css/g, FA_CSS);
+    const frame = document.createElement('iframe');
+    frame.className = 'py-html';
+    frame.title = 'Cell output';
+    frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+      'html,body{margin:0;padding:0;background:#fff;}' +
+      'body{padding:6px 0;font-family:system-ui,sans-serif;}' +
+      'img{max-width:100%;height:auto;}' +
+      '.animation{display:block!important;max-width:100%;}' +
+      '.anim-controls{max-width:100%;}' +
+      'input[type=range].anim-slider{width:100%!important;max-width:520px;}' +
+      '</style></head><body>' + html + '</body></html>';
+    const fit = () => {
+      try {
+        const h = Math.ceil(frame.contentDocument.body.getBoundingClientRect().height);
+        if (h > 0) frame.style.height = h + 'px';   // 0 while the tab is hidden
+      } catch (_) {}
+    };
+    frame.addEventListener('load', () => {
+      fit();
+      try {
+        const doc = frame.contentDocument;
+        doc.querySelectorAll('img').forEach(im => im.addEventListener('load', fit));
+        new frame.contentWindow.ResizeObserver(fit).observe(doc.body);
+      } catch (_) {}
+    });
+    out.appendChild(frame);
+  }
+
+  function showFig(out, b64){
+    const img = new Image();
+    img.alt = 'matplotlib figure';
+    img.src = 'data:image/png;base64,' + b64;
+    out.appendChild(img);
+  }
+
+  /* Run `code` on the shared kernel and render everything it produces into
+     `out`. Returns true / false (ran, with or without an error) or null if
+     Python itself couldn't start. */
+  function execInto(code, out){
+    return enqueue(async () => {
+      out.innerHTML = '';
+      if (!code.trim()) return true;
+
+      let py;
+      if (!pyodide){
+        appendText(out, 'Starting Python… the first run downloads numpy and matplotlib, so give it about 10–20 seconds.\n', 'py-muted');
+      }
+      try { py = await bootKernel(); }
+      catch (err){
+        out.innerHTML = '';
+        appendText(out, 'Python couldn’t load. Check your internet connection, then press Run again.\n', 'py-err');
+        return null;
+      }
+      out.innerHTML = '';
+
+      setKernel('busy');
+      const k = py.pyimport('_kepler');
+      let ok = true;
+      try {
+        py.setStdout({ batched: (t) => appendText(out, t + '\n') });
+        py.setStderr({ batched: (t) => appendText(out, t + '\n', 'py-err') });
+        const result = await py.runPythonAsync(code);
+        const res = (result === undefined) ? k.outputs() : k.outputs(result);
+        const [html, text] = res.toJs();
+        res.destroy();
+        if (result && typeof result.destroy === 'function') result.destroy();
+        html.forEach(h => showHTML(out, h));
+        if (text != null) appendText(out, text + '\n');
+      } catch (err){
+        ok = false;
+        const msg = trimTraceback(err.message || String(err));
+        appendText(out, msg + '\n', 'py-err');
+        if (/NameError/.test(msg)) {
+          appendText(out, 'Tip: run the cells above this one first, in order. A cell only knows about variables that earlier cells have already created.\n', 'py-muted');
+        }
+      }
+      try {
+        const fp = k.grab_figs();
+        const figs = fp.toJs();
+        fp.destroy();
+        figs.forEach(b64 => showFig(out, b64));
+      } catch (_) {}
+      k.destroy();
+      setKernel('ready');
+      return ok;
+    });
+  }
+
   async function runCell(cell){
     const code = cell.querySelector('.nb-code').value;
     const promptEl = cell.querySelector('.nb-prompt');
@@ -3549,49 +3735,14 @@ _out
     if (!code.trim()){ clearCellOutput(cell); promptEl.textContent = 'In [ ]:'; return; }
 
     promptEl.textContent = 'In [*]:';
-    outrow.innerHTML = '';
     const out = document.createElement('pre');
     out.className = 'nb-out';
-
-    let py;
-    try {
-      py = await bootKernel();
-    } catch (err){
-      renderOutrow(outrow, out);
-      appendText(out, (err.message || String(err)), 'py-err');
-      promptEl.textContent = 'In [ ]:';
-      return;
-    }
-
-    setKernel('busy');
     renderOutrow(outrow, out);
-    try {
-      py.setStdout({ batched: (t) => appendText(out, t) });
-      py.setStderr({ batched: (t) => appendText(out, t, 'py-err') });
-      const result = await py.runPythonAsync(code);
-
-      // Collect any figures produced
-      let figs = [];
-      try { const proxy = await py.runPythonAsync(GRAB_FIGS); figs = proxy.toJs(); proxy.destroy(); } catch(_) {}
-      figs.forEach(b64 => {
-        const img = new Image();
-        img.src = 'data:image/png;base64,' + b64;
-        out.appendChild(img);
-      });
-
-      if (result !== undefined && result !== null && figs.length === 0){
-        appendText(out, String(result));
-      }
-      execCount += 1;
-      promptEl.textContent = 'In [' + execCount + ']:';
-    } catch (err){
-      appendText(out, (err.message || String(err)), 'py-err');
-      execCount += 1;
-      promptEl.textContent = 'In [' + execCount + ']:';
-    } finally {
-      setKernel('ready');
-    }
-    if (!out.textContent.trim() && !out.querySelector('img')) outrow.innerHTML = '';
+    const ran = await execInto(code, out);
+    if (ran === null){ promptEl.textContent = 'In [ ]:'; return; }
+    execCount += 1;
+    promptEl.textContent = 'In [' + execCount + ']:';
+    if (!out.textContent.trim() && !out.querySelector('img, iframe')) outrow.innerHTML = '';
   }
 
   function renderOutrow(outrow, out){
@@ -3614,8 +3765,8 @@ _out
     cellsEl.querySelectorAll('.nb-cell').forEach(c => { clearCellOutput(c); c.querySelector('.nb-prompt').textContent = 'In [ ]:'; });
   });
   nb.querySelector('[data-act="restart"]').addEventListener('click', async () => {
-    if (pyodide){ try { await pyodide.runPythonAsync("import matplotlib.pyplot as _p; _p.close('all')"); } catch(_){}
-      try { pyodide.globals.clear(); await pyodide.runPythonAsync("import matplotlib.pyplot as plt"); } catch(_){}
+    if (pyodide){
+      await enqueue(() => { const k = pyodide.pyimport('_kepler'); try { k.reset(); } finally { k.destroy(); } });
     }
     execCount = 0;
     cellsEl.querySelectorAll('.nb-cell').forEach(c => { clearCellOutput(c); c.querySelector('.nb-prompt').textContent = 'In [ ]:'; });
@@ -3624,28 +3775,20 @@ _out
 
   /* Shared with the editable code cells in the write-up above: run arbitrary
      code on this same kernel and render the result into a caller-supplied node. */
-  window.__keplerRun = async function (code, out) {
-    out.innerHTML = '';
-    if (!code.trim()) return;
-    let py;
-    try { py = await bootKernel(); }
-    catch (err) { appendText(out, (err.message || String(err)), 'py-err'); return; }
+  window.__keplerRun = function (code, out) { return execInto(code, out); };
 
-    setKernel('busy');
-    try {
-      py.setStdout({ batched: (t) => appendText(out, t) });
-      py.setStderr({ batched: (t) => appendText(out, t, 'py-err') });
-      const result = await py.runPythonAsync(code);
-      let figs = [];
-      try { const proxy = await py.runPythonAsync(GRAB_FIGS); figs = proxy.toJs(); proxy.destroy(); } catch (_) {}
-      figs.forEach(b64 => { const img = new Image(); img.src = 'data:image/png;base64,' + b64; out.appendChild(img); });
-      if (result !== undefined && result !== null && figs.length === 0) appendText(out, String(result));
-    } catch (err) {
-      appendText(out, (err.message || String(err)), 'py-err');
-    } finally {
-      setKernel('ready');
-    }
-  };
+  // Start Python in the background once the code section scrolls into view,
+  // so it's usually ready by the time someone presses Run.
+  const lab = document.querySelector('[data-codelab]');
+  if (lab && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(en => en.isIntersecting)){
+        io.disconnect();
+        bootKernel().catch(() => {});
+      }
+    }, { rootMargin: '600px 0px' });
+    io.observe(lab);
+  }
 
   // start with one empty cell
   addCell();
